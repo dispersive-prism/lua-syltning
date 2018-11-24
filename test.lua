@@ -1,5 +1,4 @@
 -- Create a 2d table
-
 table = require("lib.tileset")
 
 tileset = table:init(10, 10)

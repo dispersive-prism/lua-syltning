@@ -1,17 +1,15 @@
 -- Class for holding collisionable platforms
+Tileset = {}
 
-Tileset = { x = 0, y = 0}
-
-function Tilset:new(o)
-        o = o or {}
-        setmetatable(o, self)
-        self.__index = self
+function Tileset:init(x, y)
+        o = {}
+        for i = 1, x do
+            o[i] = {}
+            for j = 1, y do
+                o[i][j] = 0
+            end
+        end
         return o
-end
-
-function Tileset:setPosition(x, y)
-    self.x = x
-    self.y = y
 end
 
 return Tileset
