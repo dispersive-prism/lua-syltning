@@ -24,6 +24,9 @@ function love.load()
 end
  
 function love.update(dt)
+    -- Apply gravity to the player
+    thePlayer.y = thePlayer.y + theWorld.gravity * dt
+    --thePlayer.x = thePlayer.x + theWorld.gravity * dt
 end
  
 function love.draw()
@@ -40,4 +43,26 @@ function love.draw()
     -- Draw the player
     love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
     love.graphics.rectangle("fill", thePlayer.x - thePlayer.width / 2, thePlayer.y - thePlayer.height / 2, thePlayer.width, thePlayer.height)
+    
+    -- Draw the collision boxes around the player
+    -- x x x
+    -- x P x
+    -- x x x
+    
+    -- Which tile is the player currently in?
+    tileX = math.floor(thePlayer.x / tilesize)
+    tileY = math.floor(thePlayer.y / tilesize)
+    
+    love.graphics.setColor(1, 1, 1, 0.5)
+    
+    for i = -1, 1 do
+        for j = -1, 1 do
+            love.graphics.rectangle("line", (tileX + i) * tilesize, (tileY + j) * tilesize, tilesize, tilesize)
+        end
+    end
+    
+    --print("Tile X: "..tileX.." Tile Y: "..tileY)
+    
+    
+    
 end
