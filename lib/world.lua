@@ -1,0 +1,3 @@
+World = {
+    gravity = 100
+}
