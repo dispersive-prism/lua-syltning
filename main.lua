@@ -33,10 +33,8 @@ function love.update(dt)
     nextX = thePlayer.x --+ theWorld.gravity * dt
     
     -- Check for collisions in the tiles around the player
-    tileX = math.floor(nextX / tilesize)
-    tileY = math.floor(nextY / tilesize)
-    
-    print(tileX..", "..tileY)
+    tileX = math.floor(nextX / tilesize) + 1
+    tileY = math.floor(nextY / tilesize) + 1
     
     xx = -1
     yy = -1
@@ -58,63 +56,55 @@ function love.update(dt)
                     pw = px + thePlayer.width
                     ph = py + thePlayer.height
                     
-                    
+                    print("x: "..x..", y: "..y.." --- w: "..w..", h: "..h.." Player px: "..px..", py: "..py.." pw: "..pw..", ph: "..ph)
+                    print(i..", "..j.."  "..xx..", "..yy)
                     -- Two items are overlapping depending on direction
                     if xx == -1 and yy == -1 then
                         -- Upper left -> x - 1, y - 1 => stops negative x and negative y movement
-                        if px < w then
+                        if px < w and py < h then
                             print("1")
                             nextX = thePlayer.x
-                        end 
-                        if py < h then
-                            print("2")
                             nextY = thePlayer.y    
                         end
                     end
-                    if xx == -1 and yy == 0 then
+                    if xx == 0 and yy == -1 then
                         -- Upper middle -> x -1, y => stops negative y movement
                         if py < h then
                             print("3")
                             nextY = thePlayer.y
                         end
                     end
-                    if xx == -1 and yy == 1 then
+                    if xx == 1 and yy == -1 then
                         -- Upper right -> x - 1, y + 1 => stops positive z and negative y movement
-                        if pw > x then
+                        if pw > x and py < y then
                             print("4")
                             nextX = thePlayer.x    
-                        end
-                        if py < y then
-                            print("5")
                             nextY = thePlayer.y
                         end
                     end
-                    if xx == 0 and yy == -1 then
+                    if xx == -1 and yy == 0 then
                         -- Middle left -> x, y - 1 => stops negative x movement
                         if px < w then
                             print("6")
                             nextX = thePlayer.x
                         end
                     end
-                    if xx == 0 and yy == 1 then
+                    if xx == 1 and yy == 0 then
                         -- Middle right -> x, y + 1 => stops positive x movement
                         if pw > x then
                             print("7")
                             nextX = thePlayer.x
                         end
                     end
-                    if xx == 1 and yy == -1 then
+                    if xx == -1 and yy == 1 then
                         -- Lower left -> x + 1, y - 1 => stops negative x and positive y movement
-                        if pw < w then
+                        if pw < w and ph > y then
                             print("8")
                             nextX = thePlayer.x
-                        end
-                        if ph > y then
-                            print("9")
                             nextY = thePlayer.y
                         end
                     end
-                    if xx == 1 and yy == 0 then
+                    if xx == 0 and yy == 1 then
                         -- Lower middle -> x + 1, y => stops positive y movement
                         if ph > y then
                             print("10")
@@ -123,12 +113,9 @@ function love.update(dt)
                     end
                     if xx == 1 and yy == 1 then
                         -- Lower right -> x + 1, y + 1 => stops positive x and positive y movement
-                        if pw > x then
+                        if pw > x and ph > y then
                             print("11")
                             nextX = thePlayer.x
-                        end
-                        if ph > y then
-                            print("12")
                             nextY = thePlayer.y
                         end
                     end
