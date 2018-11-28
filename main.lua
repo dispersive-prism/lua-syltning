@@ -20,6 +20,8 @@ function love.load()
     
     table[10][2] = 1
     table[10][3] = 1
+    table[1][2] = 1
+    table[1][3] = 1
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
@@ -27,8 +29,8 @@ end
  
 function love.update(dt)
     -- Apply gravity to the player
-    nextY = thePlayer.y --+ theWorld.gravity * dt
-    nextX = thePlayer.x + theWorld.gravity * dt
+    nextY = thePlayer.y + theWorld.gravity * dt
+    nextX = thePlayer.x --+ theWorld.gravity * dt
     
     -- Check for collisions in the tiles around the player
     tileX = math.floor(nextX / tilesize)
@@ -41,12 +43,12 @@ function love.update(dt)
     
     for i = tileX - 1, tileX + 1 do
         for j = tileY - 1, tileY + 1 do
-            print("x: "..xx..", y: "..yy)
+            --print("x: "..xx..", y: "..yy)
             if i > 0 and j > 0 and i <= 10 and j <= 10 then
                 if table[i][j] == 1 then
                     -- Convert the tile positions into coordinates
-                    x = i * tilesize
-                    y = j * tilesize
+                    x = (i - 1) * tilesize
+                    y = (j - 1) * tilesize
                     w = tilesize + x
                     h = tilesize + y
                     
