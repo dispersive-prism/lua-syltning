@@ -1,5 +1,5 @@
 World = {
-    gravity = 100
+    gravity = 150
 }
 
 return World
