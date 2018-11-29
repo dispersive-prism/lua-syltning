@@ -64,9 +64,6 @@ function love.update(dt)
     tileX = math.floor(nextX / tilesize) + 1
     tileY = math.floor(nextY / tilesize) + 1
     
-    xx = -1
-    yy = -1
-    
     -- Always set the player to airborne and explicitly determine whether it should be set to 0
     thePlayer.airborne = 1
     
@@ -95,8 +92,8 @@ function love.update(dt)
     -- Vertical check
     if tileXCheck > 0 and tileXCheck <= 10 then
         if table[tileXCheck][tileY] == 1 then
-            x = tileXCheck - 1 * tilesize
-            y = tileY - 1 * tilesize
+            x = (tileXCheck - 1) * tilesize
+            y = (tileY - 1) * tilesize
             w = tilesize + x
             h = tilesize + y
                         
@@ -113,15 +110,15 @@ function love.update(dt)
     
     if tileYCheck > 0 and tileYCheck <= 10 then
         if table[tileX][tileYCheck] == 1 then
-            x = (tileXCheck - 1) * tilesize
-            y = (tileY - 1) * tilesize
+            x = (tileX - 1) * tilesize
+            y = (tileYCheck - 1) * tilesize
             w = tilesize + x
             h = tilesize + y
             
-            print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
+            --print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            --print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            --print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            --print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
             
             if (pw > x and pw < w and ph > y and ph < h) or
                (px < w and px > x and ph > y and ph < h) or 
