@@ -118,7 +118,11 @@ function love.update(dt)
             w = tilesize + x
             h = tilesize + y
             
-            print(px..", "..pw..", "..ph.."   "..x..", "..w..", "..h)
+            print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
+            
             if (pw > x and pw < w and ph > y and ph < h) or
                (px < w and px > x and ph > y and ph < h) or 
                (px > x and pw < w and ph > y and ph < h) or
