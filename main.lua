@@ -97,13 +97,25 @@ function love.update(dt)
             w = tilesize + x
             h = tilesize + y
                         
+            
+            print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+            print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
+            
             if (pw > x and pw < w and ph > y and ph < h) or
                (px < w and px > x and ph > y and ph < h) or 
                (px > x and pw < w and ph > y and ph < h) or
                (px > x and pw < w and py > y and ph < h) then
                 -- Collision?
+                
+                if thePlayer.xSpeed > 0 then
+                    nextX = x - thePlayer.width / 2
+                else
+                    nextX = w + thePlayer.width / 2
+                end
+                
                 thePlayer.xSpeed = 0
-                nextX = thePlayer.x
             end
         end
     end
@@ -125,9 +137,15 @@ function love.update(dt)
                (px > x and pw < w and ph > y and ph < h) or
                (px > x and pw < w and py > y and ph < h) then
                 -- Collision?
+                if thePlayer.ySpeed > 0 then
+                    nextY = y - thePlayer.height / 2
+                else
+                    nextY = h + thePlayer.height / 2
+                end
+                
                 thePlayer.ySpeed = 0
                 thePlayer.airborne = 0
-                nextY = thePlayer.y
+                nextY = y - thePlayer.height / 2
             end
         end
     end
