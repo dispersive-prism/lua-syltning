@@ -5,7 +5,9 @@ Player = {
     ySpeed = 0,
     width = 10,
     height = 25,
-    jumpHeight = -200
+    jumpHeight = -300,
+    runSpeed = 200,
+    airborne = 0
 }
 
 return Player

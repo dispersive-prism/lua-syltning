@@ -22,25 +22,37 @@ function love.load()
     table[10][3] = 1
     table[1][2] = 1
     table[1][3] = 1
+    table[6][9] = 1
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
 end
  
 function love.update(dt)
+    -- Set player speed based on keyboard input
     if love.keyboard.isDown('d') then
-        thePlayer.xSpeed = 100
+        thePlayer.xSpeed = thePlayer.runSpeed
     end
     if love.keyboard.isDown('a') then
-        thePlayer.xSpeed = -100    
+        thePlayer.xSpeed = -thePlayer.runSpeed
     end
-    if love.keyboard.isDown('w') then
-        thePlayer.ySpeed = thePlayer.jumpHeight    
+    if love.keyboard.isDown('w') and thePlayer.airborne == 0 then
+        thePlayer.ySpeed = thePlayer.jumpHeight
+        thePlayer.airborne = 1
+    end
+    if not love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
+        thePlayer.xSpeed = 0
     end
     
+    -- Apply force to the player
+    if thePlayer.airborne == 1 then
+        thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity
+    end
+
+    
     -- Apply gravity to the player
-    nextY = thePlayer.y + theWorld.gravity * dt
-    nextX = thePlayer.x + thePlayer.xSpeed * dt
+    nextY = math.floor(thePlayer.y + thePlayer.ySpeed * dt)
+    nextX = math.floor(thePlayer.x + thePlayer.xSpeed * dt)
     
     -- Check for collisions in the tiles around the player
     tileX = math.floor(nextX / tilesize) + 1
@@ -48,6 +60,9 @@ function love.update(dt)
     
     xx = -1
     yy = -1
+    
+    -- Always set the player to airborne and explicitly determine whether it should be set to 0
+    thePlayer.airborne = 1
     
     for i = tileX - 1, tileX + 1 do
         for j = tileY - 1, tileY + 1 do
@@ -119,6 +134,7 @@ function love.update(dt)
                         if ph > y then
                             --print("10")
                             nextY = thePlayer.y
+                            thePlayer.airborne = 0
                         end
                     end
                     if xx == 1 and yy == 1 then
