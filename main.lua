@@ -23,6 +23,8 @@ function love.load()
     table[1][2] = 1
     table[1][3] = 1
     table[6][9] = 1
+    table[6][8] = 1
+    table[4][9] = 1
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
@@ -91,61 +93,70 @@ function love.update(dt)
     
     -- Vertical check
     if tileXCheck > 0 and tileXCheck <= 10 then
-        if table[tileXCheck][tileY] == 1 then
-            x = (tileXCheck - 1) * tilesize
-            y = (tileY - 1) * tilesize
-            w = tilesize + x
-            h = tilesize + y
-                        
-            
-            print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
-            
-            if (pw > x and pw < w and ph > y and ph < h) or
-               (px < w and px > x and ph > y and ph < h) or 
-               (px > x and pw < w and ph > y and ph < h) or
-               (px > x and pw < w and py > y and ph < h) then
-                -- Collision?
-                
-                if thePlayer.xSpeed > 0 then
-                    nextX = x - thePlayer.width / 2
-                else
-                    nextX = w + thePlayer.width / 2
+        -- Check the three left/right tiles
+        for ctY = tileY - 1, tileY + 1 do
+            if ctY > 0 and ctY <= 10 and table[tileXCheck][tileY] == 1 then
+                x = (tileXCheck - 1) * tilesize
+                y = (tileY - 1) * tilesize
+                w = tilesize + x
+                h = tilesize + y
+
+                print(ctY)
+                print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+                print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
+                print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+                print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h.."\n")
+
+                if (pw > x and pw < w and ph > y and ph <= h + 1) or
+                   (px < w and px > x and ph > y and ph <= h + 1) or 
+                   (px > x and pw < w and ph > y and ph <= h + 1) or
+                   (px > x and pw < w and py > y and ph <= h + 1) then
+                    -- Collision?
+
+                    if thePlayer.xSpeed > 0 then
+                        nextX = x - thePlayer.width / 2
+                    elseif thePlayer.xSpeed < 0 then
+                        nextX = w + thePlayer.width / 2
+                    else
+                        nextX = thePlayer.x
+                    end
+
+                    thePlayer.xSpeed = 0
                 end
-                
-                thePlayer.xSpeed = 0
             end
         end
     end
     
+    -- Horizontal check
     if tileYCheck > 0 and tileYCheck <= 10 then
-        if table[tileX][tileYCheck] == 1 then
-            x = (tileX - 1) * tilesize
-            y = (tileYCheck - 1) * tilesize
-            w = tilesize + x
-            h = tilesize + y
-            
-            --print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            --print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            --print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
-            --print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
-            
-            if (pw > x and pw < w and ph > y and ph < h) or
-               (px < w and px > x and ph > y and ph < h) or 
-               (px > x and pw < w and ph > y and ph < h) or
-               (px > x and pw < w and py > y and ph < h) then
-                -- Collision?
-                if thePlayer.ySpeed > 0 then
+        -- Check the three bottom/upper tiles
+        for ctX = tileX - 1, tileX + 1 do
+            if ctX > 0 and ctX <= 10 and table[ctX][tileYCheck] == 1 then
+                x = (ctX - 1) * tilesize
+                y = (tileYCheck - 1) * tilesize
+                w = tilesize + x
+                h = tilesize + y
+
+                --print(pw.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+                --print(px.." > "..w.." and "..px.." < "..x.." and "..ph.." > "..y.." and "..ph.." < "..h)
+                --print(px.." > "..x.." and "..pw.." < "..w.." and "..ph.." > "..y.." and "..ph.." < "..h)
+                --print(px.." > "..x.." and "..pw.." < "..w.." and "..py.." > "..y.." and "..ph.." < "..h)
+
+                if (pw > x and pw < w and ph > y and ph < h) or
+                   (px < w and px > x and ph > y and ph < h) or 
+                   (px > x and pw < w and ph > y and ph < h) or
+                   (px > x and pw < w and py > y and ph < h) then
+                    -- Collision?
+                    if thePlayer.ySpeed > 0 then
+                        nextY = y - thePlayer.height / 2
+                    else
+                        nextY = h + thePlayer.height / 2
+                    end
+
+                    thePlayer.ySpeed = 0
+                    thePlayer.airborne = 0
                     nextY = y - thePlayer.height / 2
-                else
-                    nextY = h + thePlayer.height / 2
                 end
-                
-                thePlayer.ySpeed = 0
-                thePlayer.airborne = 0
-                nextY = y - thePlayer.height / 2
             end
         end
     end
