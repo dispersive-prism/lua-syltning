@@ -25,6 +25,8 @@ function love.load()
     table[6][9] = 1
     table[6][8] = 1
     table[4][9] = 1
+    table[6][6] = 1
+    table[2][8] = 1
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
@@ -69,6 +71,115 @@ function love.update(dt)
     -- Always set the player to airborne and explicitly determine whether it should be set to 0
     thePlayer.airborne = 1
     
+    px = nextX - thePlayer.width / 2
+    py = nextY - thePlayer.height / 2
+    pw = px + thePlayer.width
+    ph = py + thePlayer.height    
+    
+    -- Check all the tiles surrounding the player
+    for ctX = tileX - 1, tileX + 1 do
+        for ctY = tileY - 1, tileY + 1 do
+            if ctX > 0 and ctX <= 10 and ctY > 0 and ctY <= 10 and table[ctX][ctY] == 1 then
+                x = (ctX - 1) * tilesize
+                y = (ctY - 1) * tilesize
+                w = tilesize + x
+                h = tilesize + y
+                
+                --[[if (pw > x and pw < w and ph > y and ph <= h + 1) or
+                   (px < w and px > x and ph > y and ph <= h + 1) or 
+                   (px > x and pw < w and ph > y and ph <= h + 1) or
+                   (px > x and pw < w and py > y and ph <= h + 1) then --]]
+                
+                if (pw > x and pw < w and py > y and py < h) or
+                   (pw > x and pw < w and ph > y and ph < h) or
+                   (pw > x and pw < w and py > y and py < h) or
+                   (px > x and pw < w and ph > y and ph < h) or
+                   (px > x and pw < w and py > y and ph < h) or
+                   (px > x and pw < w and py > y and py < h) or
+                   (px > x and px < w and ph > y and ph < h) or
+                   (px > x and px < w and py > y and ph < h) or
+                   (px > x and px < w and py > y and py < h) then
+                    
+                    -- Collision?
+
+                    -- Figure out which side that collided
+                    if ctX < tileX and ctY < tileY then
+                        -- Upper left. Cancel any ySpeed and reset the player
+                        print("Upper left")
+                        --thePlayer.ySpeed = 0
+                        --thePlayer.airborne = 0
+                        --nextY = h - thePlayer.height / 2
+                    end
+                    if ctX == tileX and ctY < tileY then
+                        -- Upper middle. Cancel any ySpeed and reset the player
+                        print("Upper middle")
+                        if thePlayer.ySpeed < 0 then
+                            thePlayer.ySpeed = 0
+                            nextY = h + thePlayer.height / 2    
+                        end
+                        --thePlayer.airborne = 0
+
+                    end
+                    if ctX > tileX and ctY < tileY then
+                        -- Upper right. Cancel any negative ySpeed (player jumping) and reset the player
+                        print("Upper right")
+                        if thePlayer.xSpeed > 0 then
+                            thePlayer.xSpeed = 0
+                        end
+                        --thePlayer.ySpeed = 0
+                        --thePlayer.airborne = 0
+                        --nextY = h - thePlayer.height / 2
+                    end
+                    if ctX < tileX and ctY == tileY then
+                        -- Middle left. Cancel any xSpeed and reset the player
+                        print("Middle left")
+                        thePlayer.xSpeed = 0
+                        nextX = w + thePlayer.width / 2        
+                    end
+                    if ctX == tileX and ctY == tileY then
+                        -- Middle
+                    end
+                    if ctX > tileX and ctY == tileY then
+                        -- Middle right. Cancel any xSpeed and reset the player
+                        print("Middle right")
+                        thePlayer.xSpeed = 0
+                        nextX = x - thePlayer.width / 2
+                    end
+                    if ctX < tileX and ctY > tileY then
+                        -- Lower left. Cancel any ySpeed and reset the player
+                        -- But only if the lower middle is not there
+                        print("Lower left")
+                        if table[ctX+1][ctY] == 1 then
+                            print("Solid below")
+                            thePlayer.ySpeed = 0
+                            thePlayer.airborne = 0
+                            nextY = y - thePlayer.height / 2
+                        end
+                    end
+                    if ctX == tileX and ctY > tileY then
+                        -- Lower middle. Cancel any ySpeed and reset the player
+                        print("Lower middle")
+                        thePlayer.ySpeed = 0
+                        thePlayer.airborne = 0
+                        nextY = y - thePlayer.height / 2
+                    end
+                    if ctX > tileX and ctY > tileY then
+                        -- Lower right. Cancel any ySpeed and reset the player
+                        -- But only if the lower middle is not there
+                        print("Lower right")
+                        if table[ctX-1][ctY] == 1 then
+                            thePlayer.ySpeed = 0
+                            thePlayer.airborne = 0
+                            nextY = y - thePlayer.height / 2
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    
+    --[[
     tileXCheck = tileX
     tileYCheck = tileY
     
@@ -160,6 +271,7 @@ function love.update(dt)
             end
         end
     end
+    --]]
     
     thePlayer.x = nextX
     thePlayer.y = nextY
