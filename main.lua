@@ -27,6 +27,10 @@ function love.load()
     table[4][9] = 1
     table[6][6] = 1
     table[2][8] = 1
+    table[2][7] = 1
+    table[3][5] = 1
+    table[4][5] = 1
+    table[5][5] = 1
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
@@ -49,7 +53,7 @@ function love.update(dt)
     end
     if love.keyboard.isDown('g') then
         thePlayer.x = 200
-        thePlayer.y = 100
+        thePlayer.y = -100
         thePlayer.ySpeed = 0
         thePlayer.xSpeed = 0
     end
@@ -106,6 +110,10 @@ function love.update(dt)
                     if ctX < tileX and ctY < tileY then
                         -- Upper left. Cancel any ySpeed and reset the player
                         print("Upper left")
+                        if thePlayer.xSpeed < 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = w + thePlayer.width / 2
+                        end
                         --thePlayer.ySpeed = 0
                         --thePlayer.airborne = 0
                         --nextY = h - thePlayer.height / 2
@@ -125,6 +133,7 @@ function love.update(dt)
                         print("Upper right")
                         if thePlayer.xSpeed > 0 then
                             thePlayer.xSpeed = 0
+                            nextX = x - thePlayer.width / 2
                         end
                         --thePlayer.ySpeed = 0
                         --thePlayer.airborne = 0
@@ -137,7 +146,24 @@ function love.update(dt)
                         nextX = w + thePlayer.width / 2        
                     end
                     if ctX == tileX and ctY == tileY then
-                        -- Middle
+                        print("Middle")
+                        -- Middle. This is a tricky situation. Clipping through
+                        if thePlayer.ySpeed > 0 then
+                            thePlayer.ySpeed = 0
+                            nextY = y - thePlayer.height / 2
+                        end
+                        if thePlayer.ySpeed < 0 then
+                            thePlayer.ySpeed = 0
+                            nextY = h - thePlayer.height / 2
+                        end
+                        if thePlayer.xSpeed > 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = x - thePlayer.width / 2
+                        end
+                        if thePlayer.xSpeed < 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = w + thePlayer.width / 2
+                        end
                     end
                     if ctX > tileX and ctY == tileY then
                         -- Middle right. Cancel any xSpeed and reset the player

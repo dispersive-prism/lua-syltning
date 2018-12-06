@@ -1,6 +1,6 @@
 World = {
     -- Gravity negative due to fact that y axis is inverted
-    gravity = -15,
+    gravity = -18,
     drag = 200
 }
 
