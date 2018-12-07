@@ -6,8 +6,13 @@ Player = {
     width = 20,
     height = 26,
     jumpHeight = -580,
+    acceleration = 700,
     runSpeed = 350,
-    airborne = 0
+    airborne = 0,
+    lastJumpTime = 0,
+    allowJumpAfter = 0.005,
+    groundedTime = 0,
+    moving = 0
 }
 
 return Player

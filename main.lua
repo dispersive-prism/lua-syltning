@@ -6,6 +6,9 @@ theWorld = require("lib.world")
 
 tilesize = 50
 
+-- Keeping track of the controls
+isJumping = 0
+
 function love.load()    
     -- Set the window size
     love.window.setMode(tilesize * 10, tilesize * 10)
@@ -39,17 +42,48 @@ end
 function love.update(dt)
     -- Set player speed based on keyboard input
     if love.keyboard.isDown('d') then
-        thePlayer.xSpeed = thePlayer.runSpeed
+        if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
+            thePlayer.xSpeed = thePlayer.xSpeed + thePlayer.acceleration * dt
+        end
+        if thePlayer.xSpeed > thePlayer.runSpeed then
+            thePlayer.xSpeed = thePlayer.runSpeed
+        end
     end
     if love.keyboard.isDown('a') then
-        thePlayer.xSpeed = -thePlayer.runSpeed
+        if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
+            thePlayer.xSpeed = thePlayer.xSpeed - thePlayer.acceleration * dt
+        end
+        if -thePlayer.xSpeed > thePlayer.runSpeed then
+            thePlayer.xSpeed = -thePlayer.runSpeed
+        end
     end
     if love.keyboard.isDown('w') and thePlayer.airborne == 0 then
-        thePlayer.ySpeed = thePlayer.jumpHeight
-        thePlayer.airborne = 1
+        if thePlayer.lastJumpTime == 0 then
+                thePlayer.lastJumpTime = love.timer.getTime()
+        end
+        if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter then        
+            thePlayer.ySpeed = thePlayer.jumpHeight
+            thePlayer.airborne = 1
+            print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
+            thePlayer.lastJumpTime = love.timer.getTime()
+        else
+            print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
+        end
+    end
+    if not love.keyboard.isDown('w') then
+       thePlayer.jastJumpTime = love.timer.getTime()
+       -- Nothing
     end
     if not love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
-        thePlayer.xSpeed = 0
+        -- Apply drag to the player
+        if thePlayer.xSpeed > 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
+        end
+    end
+    if not love.keyboard.isDown('a') and not love.keyboard.isDown('w') then
+        if thePlayer.xSpeed < 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
+        end
     end
     if love.keyboard.isDown('g') then
         thePlayer.x = 200
@@ -142,6 +176,9 @@ function love.update(dt)
                     if ctX < tileX and ctY == tileY then
                         -- Middle left. Cancel any xSpeed and reset the player
                         print("Middle left")
+                        if thePlayer.xSpeed < 0 then
+                            thePlayer.ySpeed = thePlayer.ySpeed / 1.5
+                        end
                         thePlayer.xSpeed = 0
                         nextX = w + thePlayer.width / 2        
                     end
@@ -168,6 +205,9 @@ function love.update(dt)
                     if ctX > tileX and ctY == tileY then
                         -- Middle right. Cancel any xSpeed and reset the player
                         print("Middle right")
+                        if thePlayer.xSpeed > 0 then
+                            thePlayer.ySpeed = thePlayer.ySpeed / 1.5
+                        end
                         thePlayer.xSpeed = 0
                         nextX = x - thePlayer.width / 2
                     end
