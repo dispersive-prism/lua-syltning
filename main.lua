@@ -58,16 +58,17 @@ function love.update(dt)
         end
     end
     if love.keyboard.isDown('w') and thePlayer.airborne == 0 then
+        print(thePlayer.xSpeed)
         if thePlayer.lastJumpTime == 0 then
                 thePlayer.lastJumpTime = love.timer.getTime()
         end
         if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter then        
             thePlayer.ySpeed = thePlayer.jumpHeight
             thePlayer.airborne = 1
-            print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
+            --print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
             thePlayer.lastJumpTime = love.timer.getTime()
         else
-            print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
+            --print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
         end
     end
     if not love.keyboard.isDown('w') then
@@ -78,11 +79,19 @@ function love.update(dt)
         -- Apply drag to the player
         if thePlayer.xSpeed > 0 then
             thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
+            if thePlayer.xSpeed < 0 then
+                thePlayer.xSpeed = 0
+            end
+            print("Above zero - Setting speed to "..thePlayer.xSpeed)
         end
     end
     if not love.keyboard.isDown('a') and not love.keyboard.isDown('w') then
         if thePlayer.xSpeed < 0 then
             thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
+            if thePlayer.xSpeed > 0 then
+                thePlayer.xSpeed = 0
+            end
+            print("Less than 0 - Setting speed to "..thePlayer.xSpeed)
         end
     end
     if love.keyboard.isDown('g') then
