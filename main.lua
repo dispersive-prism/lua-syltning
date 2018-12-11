@@ -240,14 +240,14 @@ function love.update(dt)
                         -- Lower left. Cancel any ySpeed and reset the player
                         -- But only if the lower middle is not there
                         print("Lower left")
-                        if table[ctX+1][ctY] == 1 then
+                        if table[tileX+1][tileY] == 1 then
                             thePlayer.ySpeed = 0
                             thePlayer.airborne = 0
                             nextY = y - thePlayer.height / 2
                         end
                         checkedX = tileX
                         checkedY = tileY + 1
-                        if table[tileX][tileY + 1] == 0 and table[tileX - 1][tileY] == 0 then
+                        if table[tileX][tileY + 1] == 0 and table[tileX - 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
                             print("Boink!")
                             if px < w then
                                 thePlayer.ySpeed = 0
@@ -269,7 +269,7 @@ function love.update(dt)
                         -- Lower right. Cancel any ySpeed and reset the player
                         -- But only if the lower middle is not there
                         print("Lower right ")
-                        if table[ctX-1][ctY] == 1 then
+                        if table[tileX - 1][tileY] == 1 then
                             thePlayer.ySpeed = 0
                             thePlayer.airborne = 0
                             nextY = y - thePlayer.height / 2
@@ -277,7 +277,7 @@ function love.update(dt)
                         -- Check if we're at a cliff side
                         checkedX = tileX
                         checkedY = tileY + 1
-                        if table[tileX][tileY + 1] == 0 and table[tileX + 1][tileY] == 0 then
+                        if table[tileX][tileY + 1] == 0 and table[tileX + 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
                             print("Checking!")
                             -- Are we still grounded in terms of x? Do we have a foot on the ground
                             if pw > x then
