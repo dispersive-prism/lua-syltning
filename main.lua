@@ -55,6 +55,10 @@ function love.update(dt)
         if thePlayer.xSpeed > thePlayer.runSpeed then
             thePlayer.xSpeed = thePlayer.runSpeed
         end
+        -- Apply drag if we're running in the opposite direciton
+        if thePlayer.xSpeed < 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
+        end
     end
     if love.keyboard.isDown('a') then
         if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
@@ -62,6 +66,10 @@ function love.update(dt)
         end
         if -thePlayer.xSpeed > thePlayer.runSpeed then
             thePlayer.xSpeed = -thePlayer.runSpeed
+        end
+        -- Apply drag if we're running in the opposite direction to the key
+        if thePlayer.xSpeed > 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('w') and thePlayer.airborne == 0 then
@@ -89,8 +97,11 @@ function love.update(dt)
             if thePlayer.xSpeed < 0 then
                 thePlayer.xSpeed = 0
             end
-            print("Above zero - Setting speed to "..thePlayer.xSpeed)
+            --print("Above zero - Setting speed to "..thePlayer.xSpeed)
+        elseif thePlayer.xSpeed > 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
         end
+        
     end
     if not love.keyboard.isDown('a') and not love.keyboard.isDown('w') then
         if thePlayer.xSpeed < 0 then
@@ -98,7 +109,9 @@ function love.update(dt)
             if thePlayer.xSpeed > 0 then
                 thePlayer.xSpeed = 0
             end
-            print("Less than 0 - Setting speed to "..thePlayer.xSpeed)
+            --print("Less than 0 - Setting speed to "..thePlayer.xSpeed)
+        elseif thePlayer.xSpeed < 0 then
+            thePLayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('g') then
