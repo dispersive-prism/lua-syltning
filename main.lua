@@ -27,6 +27,7 @@ function love.load()
     table[10][8] = 1
     table[10][7] = 1
     table[10][6] = 1
+    table[10][2] = 1
     table[1][2] = 1
     table[1][3] = 1
     table[6][9] = 1
@@ -181,8 +182,10 @@ function love.update(dt)
                         end
                         if table[tileX][tileY - 1] == 0 and table[tileX - 1][tileY] == 0 then
                             -- We're facing the scenario where were jumping head first into a corner
-                            thePlayer.ySpeed = 0
-                            nextY = h + thePlayer.height / 2
+                            if thePlayer.ySpeed < 0 then
+                                thePlayer.ySpeed = 0
+                                nextY = h + thePlayer.height / 2
+                            end
                         end    
                     end
                     if ctX == tileX and ctY < tileY then
@@ -201,8 +204,10 @@ function love.update(dt)
                             nextX = x - thePlayer.width / 2
                         end
                         if table[tileX][tileY - 1] == 0 and table[tileX + 1][tileY] == 0 then
-                            thePlayer.ySpeed = 0
-                            nextY = h + thePlayer.height / 2
+                            if thePlayer.ySpeed < 0 then
+                                thePlayer.ySpeed = 0
+                                nextY = h + thePlayer.height / 2
+                            end
                         end
                     end
                     if ctX < tileX and ctY == tileY then
@@ -313,7 +318,7 @@ function love.draw()
     tileY = math.floor(thePlayer.y / tilesize)
     
     -- Debugging 
-    love.graphics.setColor(1, 1, 1, 0.5)
+    --[[love.graphics.setColor(1, 1, 1, 0.5)
     
     -- Draw the collision tiles around the player
     for i = -1, 1 do
@@ -321,5 +326,5 @@ function love.draw()
             love.graphics.rectangle("line", (tileX + i) * tilesize, (tileY + j) * tilesize, tilesize, tilesize)
         end
     end   
-    --
+    --]]
 end
