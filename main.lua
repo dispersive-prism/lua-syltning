@@ -73,7 +73,7 @@ function love.update(dt)
             thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
-    if love.keyboard.isDown('w') and thePlayer.airborne == 0 then
+    if love.keyboard.isDown('w') then
         --print(thePlayer.xSpeed)
         if thePlayer.lastJumpTime == 0 then
                 thePlayer.lastJumpTime = love.timer.getTime()
@@ -125,8 +125,12 @@ function love.update(dt)
     end
     
     -- Apply force to the player
-    --if thePlayer.airborne == 1 then
+    --if thePlayer.ySpeed >= 0 and thePlayer.ySpeed <= thePlayer.maxFallSpeed then
         thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity
+        --print(thePlayer.ySpeed)
+        if thePlayer.ySpeed > thePlayer.maxFallSpeed then
+            thePlayer.ySpeed = thePlayer.maxFallSpeed
+        end
     --end
 
     
