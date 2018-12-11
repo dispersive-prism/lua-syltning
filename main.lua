@@ -73,21 +73,23 @@ function love.update(dt)
         end
     end
     if love.keyboard.isDown('w') and thePlayer.airborne == 0 then
-        print(thePlayer.xSpeed)
+        --print(thePlayer.xSpeed)
         if thePlayer.lastJumpTime == 0 then
                 thePlayer.lastJumpTime = love.timer.getTime()
         end
-        if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter then        
+        if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter and thePlayer.lastGrounded ~= 0 
+            and love.timer.getTime() - thePlayer.lastGrounded <= thePlayer.groundedDelay then        
             thePlayer.ySpeed = thePlayer.jumpHeight
-            thePlayer.airborne = 1
+            --thePlayer.airborne = 1
             --print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
             thePlayer.lastJumpTime = love.timer.getTime()
+            thePlayer.lastGrounded = 0
         else
             --print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
         end
     end
     if not love.keyboard.isDown('w') then
-       thePlayer.jastJumpTime = love.timer.getTime()
+       thePlayer.lastJumpTime = love.timer.getTime()
        -- Nothing
     end
     if not love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
@@ -122,9 +124,9 @@ function love.update(dt)
     end
     
     -- Apply force to the player
-    if thePlayer.airborne == 1 then
+    --if thePlayer.airborne == 1 then
         thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity
-    end
+    --end
 
     
     -- Apply gravity to the player
@@ -136,7 +138,7 @@ function love.update(dt)
     tileY = math.floor(nextY / tilesize) + 1
     
     -- Always set the player to airborne and explicitly determine whether it should be set to 0
-    thePlayer.airborne = 1
+    -- thePlayer.airborne = 1
     
     px = nextX - thePlayer.width / 2
     py = nextY - thePlayer.height / 2
@@ -172,7 +174,7 @@ function love.update(dt)
                     -- Figure out which side that collided
                     if ctX < tileX and ctY < tileY then
                         -- Upper left. Cancel any ySpeed and reset the player
-                        print("Upper left")
+                        --print("Upper left")
                         if thePlayer.xSpeed < 0 then
                             thePlayer.xSpeed = 0
                             nextX = w + thePlayer.width / 2
@@ -182,23 +184,18 @@ function love.update(dt)
                             thePlayer.ySpeed = 0
                             nextY = h + thePlayer.height / 2
                         end    
-                        --thePlayer.ySpeed = 0
-                        --thePlayer.airborne = 0
-                        --nextY = h - thePlayer.height / 2
                     end
                     if ctX == tileX and ctY < tileY then
                         -- Upper middle. Cancel any ySpeed and reset the player
-                        print("Upper middle")
+                        --print("Upper middle")
                         if thePlayer.ySpeed < 0 then
                             thePlayer.ySpeed = 0
                             nextY = h + thePlayer.height / 2    
                         end
-                        --thePlayer.airborne = 0
-
                     end
                     if ctX > tileX and ctY < tileY then
                         -- Upper right. Cancel any negative ySpeed (player jumping) and reset the player
-                        print("Upper right")
+                        --print("Upper right")
                         if thePlayer.xSpeed > 0 then
                             thePlayer.xSpeed = 0
                             nextX = x - thePlayer.width / 2
@@ -207,21 +204,15 @@ function love.update(dt)
                             thePlayer.ySpeed = 0
                             nextY = h + thePlayer.height / 2
                         end
-                        --thePlayer.ySpeed = 0
-                        --thePlayer.airborne = 0
-                        --nextY = h - thePlayer.height / 2
                     end
                     if ctX < tileX and ctY == tileY then
                         -- Middle left. Cancel any xSpeed and reset the player
-                        print("Middle left")
-                        --if thePlayer.xSpeed < 0 then
-                        --    thePlayer.ySpeed = thePlayer.ySpeed / 1.5
-                        --end
+                        --print("Middle left")
                         thePlayer.xSpeed = 0
                         nextX = w + thePlayer.width / 2        
                     end
                     if ctX == tileX and ctY == tileY then
-                        print("Middle")
+                        --print("Middle")
                         -- Middle. This is a tricky situation. Clipping through
                         if thePlayer.ySpeed > 0 then
                             thePlayer.ySpeed = 0
@@ -242,17 +233,12 @@ function love.update(dt)
                     end
                     if ctX > tileX and ctY == tileY then
                         -- Middle right. Cancel any xSpeed and reset the player
-                        print("Middle right")
-                        --if thePlayer.xSpeed > 0 then
-                        --    thePlayer.ySpeed = thePlayer.ySpeed / 1.5
-                        --end
+                        --print("Middle right")
                         thePlayer.xSpeed = 0
                         nextX = x - thePlayer.width / 2
                     end
                     if ctX < tileX and ctY > tileY then
-                        -- Lower left. Cancel any ySpeed and reset the player
-                        -- But only if the lower middle is not there
-                        print("Lower left")
+                        --print("Lower left")
                         if table[tileX+1][tileY] == 1 then
                             thePlayer.ySpeed = 0
                             thePlayer.airborne = 0
@@ -261,46 +247,38 @@ function love.update(dt)
                         checkedX = tileX
                         checkedY = tileY + 1
                         if table[tileX][tileY + 1] == 0 and table[tileX - 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
-                            print("Boink!")
                             if px < w then
+                                thePlayer.lastGrounded = love.timer.getTime()
                                 thePlayer.ySpeed = 0
                                 nextY = y - thePlayer.height / 2
                             end
                         end
-                        --if thePlayer.xSpeed < 0 then
-                        --    thePlayer.ySpeed = thePlayer.ySpeed / 1.5
-                        --end
                     end
                     if ctX == tileX and ctY > tileY then
                         -- Lower middle. Cancel any ySpeed and reset the player
-                        print("Lower middle")
+                        --print("Lower middle")
                         thePlayer.ySpeed = 0
-                        thePlayer.airborne = 0
                         nextY = y - thePlayer.height / 2
+                        -- Also set the lastGrounded
+                        thePlayer.lastGrounded = love.timer.getTime()
                     end
                     if ctX > tileX and ctY > tileY then
-                        -- Lower right. Cancel any ySpeed and reset the player
-                        -- But only if the lower middle is not there
-                        print("Lower right ")
+                        --print("Lower right ")
                         if table[tileX - 1][tileY] == 1 then
                             thePlayer.ySpeed = 0
-                            thePlayer.airborne = 0
                             nextY = y - thePlayer.height / 2
                         end
                         -- Check if we're at a cliff side
-                        checkedX = tileX
-                        checkedY = tileY + 1
+                        --checkedX = tileX
+                        --checkedY = tileY + 1
                         if table[tileX][tileY + 1] == 0 and table[tileX + 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
-                            print("Checking!")
                             -- Are we still grounded in terms of x? Do we have a foot on the ground
                             if pw > x then
+                                thePlayer.lastGrounded = love.timer.getTime()
                                 thePlayer.ySpeed = 0
                                 nextY = y - thePlayer.height / 2
                             end
                         end
-                        --if thePlayer.xSpeed > 0 then
-                        --    thePlayer.ySpeed = thePlayer.ySpeed / 1.5
-                        --end
                     end
                 end
             end
@@ -322,8 +300,9 @@ function love.draw()
         end
     end
     
-    love.graphics.setColor(0, 1, 0)
-    love.graphics.rectangle("fill", (checkedX - 1) * tilesize, (checkedY - 1) * tilesize, tilesize, tilesize)
+    -- For debugging purposes
+    --love.graphics.setColor(0, 1, 0)
+    --love.graphics.rectangle("fill", (checkedX - 1) * tilesize, (checkedY - 1) * tilesize, tilesize, tilesize)
     
     -- Draw the player
     love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
@@ -333,6 +312,7 @@ function love.draw()
     tileX = math.floor(thePlayer.x / tilesize)
     tileY = math.floor(thePlayer.y / tilesize)
     
+    -- Debugging 
     love.graphics.setColor(1, 1, 1, 0.5)
     
     -- Draw the collision tiles around the player
@@ -341,4 +321,5 @@ function love.draw()
             love.graphics.rectangle("line", (tileX + i) * tilesize, (tileY + j) * tilesize, tilesize, tilesize)
         end
     end   
+    --
 end

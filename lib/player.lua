@@ -11,7 +11,8 @@ Player = {
     airborne = 0,
     lastJumpTime = 0,
     allowJumpAfter = 0.005,
-    groundedTime = 0,
+    lastGrounded = 0,
+    groundedDelay = 0.10,
     moving = 0
 }
 
