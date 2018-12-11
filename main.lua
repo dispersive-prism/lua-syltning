@@ -74,19 +74,14 @@ function love.update(dt)
         end
     end
     if love.keyboard.isDown('w') then
-        --print(thePlayer.xSpeed)
         if thePlayer.lastJumpTime == 0 then
                 thePlayer.lastJumpTime = love.timer.getTime()
         end
         if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter and thePlayer.lastGrounded ~= 0 
             and love.timer.getTime() - thePlayer.lastGrounded <= thePlayer.groundedDelay then        
             thePlayer.ySpeed = thePlayer.jumpHeight
-            --thePlayer.airborne = 1
-            --print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
             thePlayer.lastJumpTime = love.timer.getTime()
             thePlayer.lastGrounded = 0
-        else
-            --print(love.timer.getTime() - thePlayer.lastJumpTime.." allow to Jump after "..thePlayer.allowJumpAfter)
         end
     end
     if not love.keyboard.isDown('w') then
@@ -100,7 +95,6 @@ function love.update(dt)
             if thePlayer.xSpeed < 0 then
                 thePlayer.xSpeed = 0
             end
-            --print("Above zero - Setting speed to "..thePlayer.xSpeed)
         elseif thePlayer.xSpeed > 0 then
             thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
         end
@@ -112,7 +106,6 @@ function love.update(dt)
             if thePlayer.xSpeed > 0 then
                 thePlayer.xSpeed = 0
             end
-            --print("Less than 0 - Setting speed to "..thePlayer.xSpeed)
         elseif thePlayer.xSpeed < 0 then
             thePLayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
@@ -159,11 +152,6 @@ function love.update(dt)
                 w = tilesize + x
                 h = tilesize + y
                 
-                --[[if (pw > x and pw < w and ph > y and ph <= h + 1) or
-                   (px < w and px > x and ph > y and ph <= h + 1) or 
-                   (px > x and pw < w and ph > y and ph <= h + 1) or
-                   (px > x and pw < w and py > y and ph <= h + 1) then --]]
-                
                 if (pw > x and pw < w and py > y and py < h) or
                    (pw > x and pw < w and ph > y and ph < h) or
                    (pw > x and pw < w and py > y and py < h) or
@@ -173,8 +161,6 @@ function love.update(dt)
                    (px > x and px < w and ph > y and ph < h) or
                    (px > x and px < w and py > y and ph < h) or
                    (px > x and px < w and py > y and py < h) then
-                    
-                    -- Collision?
 
                     -- Figure out which side that collided
                     if ctX < tileX and ctY < tileY then
@@ -241,7 +227,7 @@ function love.update(dt)
                         end
                     end
                     if ctX > tileX and ctY == tileY then
-                        -- Middle right. Cancel any xSpeed and reset the player
+                        -- Middle right.
                         --print("Middle right")
                         thePlayer.xSpeed = 0
                         nextX = x - thePlayer.width / 2
@@ -264,7 +250,7 @@ function love.update(dt)
                         end
                     end
                     if ctX == tileX and ctY > tileY then
-                        -- Lower middle. Cancel any ySpeed and reset the player
+                        -- Lower middle.
                         --print("Lower middle")
                         thePlayer.ySpeed = 0
                         nextY = y - thePlayer.height / 2
