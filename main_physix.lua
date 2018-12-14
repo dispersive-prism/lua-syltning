@@ -3,20 +3,21 @@
 tileset = require("lib.tileset")
 thePlayer = require("lib.player")
 theWorld = require("lib.world")
-worldView = require("lib.worldview")
 
-worldView.setViewSize(20, 10)
---tilesize = worldView.tileSize
+tilesize = 50
+
+-- Keeping track of the controls
+isJumping = 0
 
 function love.load()    
     -- Set the window size
-    love.window.setMode(worldView.tileSize * worldView.drawX, worldView.tileSize * worldView.drawY)
+    love.window.setMode(tilesize * 10, tilesize * 10)
     
     -- Just init an 2d array acting as our playing field
-    table = tileset:init(worldView.tilesX, worldView.tilesY)
+    table = tileset:init(20,10)
     
     -- Set one row to 1 (for solid blocks)
-    for x = 1, worldView.tilesX do
+    for x = 1, 10 do
         table[x][10] = 1
     end
     
@@ -39,7 +40,6 @@ function love.load()
     table[4][5] = 1
     table[5][5] = 1
     table[1][8] = 1
-    
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
@@ -133,8 +133,8 @@ function love.update(dt)
     nextX = math.floor(thePlayer.x + thePlayer.xSpeed * dt)
     
     -- Check for collisions in the tiles around the player
-    tileX = math.floor(nextX / worldView.tileSize) + 1
-    tileY = math.floor(nextY / worldView.tileSize) + 1
+    tileX = math.floor(nextX / tilesize) + 1
+    tileY = math.floor(nextY / tilesize) + 1
     
     -- Always set the player to airborne and explicitly determine whether it should be set to 0
     -- thePlayer.airborne = 1
@@ -147,11 +147,11 @@ function love.update(dt)
     -- Check all the tiles surrounding the player
     for ctX = tileX - 1, tileX + 1 do
         for ctY = tileY - 1, tileY + 1 do
-            if ctX > 0 and ctX <= worldView.tilesX and ctY > 0 and ctY <= worldView.tilesY and table[ctX][ctY] == 1 then
-                x = (ctX - 1) * worldView.tileSize
-                y = (ctY - 1) * worldView.tileSize
-                w = worldView.tileSize + x
-                h = worldView.tileSize + y
+            if ctX > 0 and ctX <= 10 and ctY > 0 and ctY <= 10 and table[ctX][ctY] == 1 then
+                x = (ctX - 1) * tilesize
+                y = (ctY - 1) * tilesize
+                w = tilesize + x
+                h = tilesize + y
                 
                 if (pw > x and pw < w and py > y and py < h) or
                    (pw > x and pw < w and ph > y and ph < h) or
@@ -283,64 +283,15 @@ function love.update(dt)
     
     thePlayer.x = nextX
     thePlayer.y = nextY
-    
-    -- Update the padding parameters
-    
-    -- If the player is outside the scrollWindow, update padding depending on position (and whether there is more to show)
-
-    --[[
-   tilePaddingX = 0, -- How many xTiles to pad in the world
-    tilePaddingY = 0, -- How many yTiles ot pad in the world
-    pixelPaddingX = 0, -- How many x pixels to pad in the world (should never be more than world.tileSize)
-    pixelPaddingY = 0, -- How many y pixels to pad in the world (should never be more than world.tileSize)    
-    
-    scrollWindowX = 0,
-    scrollWindowY = 0,
-    scrollWindowW = 0,
-    scrollWindowH = 0
-    
-    ]]--
-    
-    if thePlayer.x < worldView.scrollWindowX then
-        -- Just make sure that we have initialized something in the tilset for this tile
-        if(worldView.pixelPaddingX - 1 >= 0) then
-            -- Calculate how far out the player is
-            offDistance = thePlayer.x - worldView.scrollWindowX
-            worldView.pixelPaddingX = worldView.pixelPaddingX - offDistance * dt
-            if worldView.pixelPaddingX >= worldView.tileSize then
-                -- We have now padded a whole tile, update the tilePadding instead and reset the pixelPadding
-                worldView.pixelPaddingX = 0
-                worldView.tilePaddingX = worldView.tilePaddingX + 1
-            end
-        end
-    end
-    if thePlayer.x > worldView.scrollWindowW then
-        print((worldView.pixelPaddingX + 1).." <= "..worldView.tilesX)
-        if(worldView.pixelPaddingX + 1 <= worldView.tilesX) then
-            -- Calculate how far out the player is
-            offDistance = thePlayer.x + worldView.scrollWindowW
-            worldView.pixelPaddingX = worldView.pixelPaddingX + offDistance * dt
-            print(worldView.pixelPaddingX)
-            if worldView.pixelPaddingX >= worldView.tileSize then
-                -- We have now padded a whole tile, update the tilePadding instead and reset the pixelPadding
-                worldView.pixelPaddingX = 0
-                worldView.tilePaddingX = worldView.tilePaddingX - 1
-            end
-        end
-    end
-    
 end
  
 function love.draw()
     -- Draw the whole grid
-    
-    -- This is where we need to figure out which tiles to draw.
-    
-    for i = worldView.tilePaddingX + 1, worldView.drawX + worldView.tilePaddingX do
-        for j = worldView.tilePaddingY + 1, worldView.drawY + worldView.tilePaddingY do
+    for i = 1, 10 do
+        for j = 1, 10 do
             if table[i][j] == 1 then
                 love.graphics.setColor(1, 1, 1)
-                love.graphics.rectangle("fill", (i - 1) * worldView.tileSize + worldView.pixelPaddingX, (j - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * tilesize, (j - 1) * tilesize, tilesize, tilesize)
             end
         end
     end
@@ -350,15 +301,15 @@ function love.draw()
     
     -- For debugging purposes
     --love.graphics.setColor(0, 1, 0)
-    --love.graphics.rectangle("fill", (checkedX - 1) * worldView.tileSize, (checkedY - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
+    --love.graphics.rectangle("fill", (checkedX - 1) * tilesize, (checkedY - 1) * tilesize, tilesize, tilesize)
     
     -- Draw the player
     love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
     love.graphics.rectangle("fill", thePlayer.x - thePlayer.width / 2, thePlayer.y - thePlayer.height / 2, thePlayer.width, thePlayer.height)
     
     -- Which tile is the player currently in?
-    tileX = math.floor(thePlayer.x / worldView.tileSize)
-    tileY = math.floor(thePlayer.y / worldView.tileSize)
+    tileX = math.floor(thePlayer.x / tilesize)
+    tileY = math.floor(thePlayer.y / tilesize)
     
     -- Debugging 
     --[[love.graphics.setColor(1, 1, 1, 0.5)
@@ -366,7 +317,7 @@ function love.draw()
     -- Draw the collision tiles around the player
     for i = -1, 1 do
         for j = -1, 1 do
-            love.graphics.rectangle("line", (tileX + i) * worldView.tileSize, (tileY + j) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
+            love.graphics.rectangle("line", (tileX + i) * tilesize, (tileY + j) * tilesize, tilesize, tilesize)
         end
     end   
     --]]
