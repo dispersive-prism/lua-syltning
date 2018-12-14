@@ -39,6 +39,7 @@ function love.load()
     table[3][5] = 1
     table[4][5] = 1
     table[5][5] = 1
+    table[1][8] = 1
     -- Position the player
     thePlayer.x = 230
     thePlayer.y = 100
@@ -295,8 +296,8 @@ function love.draw()
         end
     end
     
-    love.graphics.setColor(1, 0.2, 0)
-    love.graphics.print("Mannby version!", 90, 200, 0, 3)
+    --love.graphics.setColor(1, 0.2, 0)
+    --love.graphics.print("Mannby version!", 90, 200, 0, 3)
     
     -- For debugging purposes
     --love.graphics.setColor(0, 1, 0)
