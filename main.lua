@@ -285,10 +285,15 @@ function love.update(dt)
     thePlayer.y = nextY
     
     -- Update the padding parameters
-    worldView.pixelPaddingX = worldView.pixelPaddingX + 20 * dt
+    worldView.pixelPaddingX = worldView.pixelPaddingX + 150 * dt
+    --thePlayer.x = thePlayer.x - worldView.pixelPaddingX
     if worldView.pixelPaddingX > worldView.tileSize then
-        worldView.pixelPaddingX = 0
-        worldView.tilePaddingX = worldView.tilePaddingX + 1
+        if worldView.drawX + worldView.tilePaddingX  < worldView.tilesX then
+            --thePlayer.x = thePlayer.x + worldView.tilePaddingX * worldView.tileSize
+            worldView.pixelPaddingX = 0
+            worldView.tilePaddingX = worldView.tilePaddingX + 1
+            print((worldView.tilePaddingX - 1).." to "..(worldView.drawX + worldView.tilePaddingX + 1))
+        end
     end
     
     -- If the player is outside the scrollWindow, update padding depending on position (and whether there is more to show)
@@ -299,12 +304,11 @@ function love.draw()
     -- Draw the whole grid
     
     -- This is where we need to figure out which tiles to draw.
-    
     for i = worldView.tilePaddingX - 1, worldView.drawX + worldView.tilePaddingX + 1 do
         for j = worldView.tilePaddingY - 1, worldView.drawY + worldView.tilePaddingY + 1 do
             if table[i][j] == 1 then
                 love.graphics.setColor(1, 1, 1)
-                love.graphics.rectangle("fill", (i - 1) * worldView.tileSize - worldView.pixelPaddingX, (j - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
+                love.graphics.rectangle("fill", (i - 1 - worldView.tilePaddingX) * worldView.tileSize - worldView.pixelPaddingX, (j - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
             end
         end
     end
@@ -318,7 +322,7 @@ function love.draw()
     
     -- Draw the player
     love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
-    love.graphics.rectangle("fill", thePlayer.x - thePlayer.width / 2, thePlayer.y - thePlayer.height / 2, thePlayer.width, thePlayer.height)
+    love.graphics.rectangle("fill", thePlayer.x - thePlayer.width / 2 - worldView.pixelPaddingX - worldView.tilePaddingX * worldView.tileSize, thePlayer.y - thePlayer.height / 2, thePlayer.width, thePlayer.height)
     
     -- Which tile is the player currently in?
     tileX = math.floor(thePlayer.x / worldView.tileSize)
