@@ -19,7 +19,7 @@ function love.load()
     for x = 1, worldView.tilesX do
         table[x][10] = 1
     end
-    
+        
     table[10][2] = 1
     table[10][3] = 1
     table[10][9] = 1
@@ -285,49 +285,13 @@ function love.update(dt)
     thePlayer.y = nextY
     
     -- Update the padding parameters
+    worldView.pixelPaddingX = worldView.pixelPaddingX + 20 * dt
+    if worldView.pixelPaddingX > worldView.tileSize then
+        worldView.pixelPaddingX = 0
+        worldView.tilePaddingX = worldView.tilePaddingX + 1
+    end
     
     -- If the player is outside the scrollWindow, update padding depending on position (and whether there is more to show)
-
-    --[[
-   tilePaddingX = 0, -- How many xTiles to pad in the world
-    tilePaddingY = 0, -- How many yTiles ot pad in the world
-    pixelPaddingX = 0, -- How many x pixels to pad in the world (should never be more than world.tileSize)
-    pixelPaddingY = 0, -- How many y pixels to pad in the world (should never be more than world.tileSize)    
-    
-    scrollWindowX = 0,
-    scrollWindowY = 0,
-    scrollWindowW = 0,
-    scrollWindowH = 0
-    
-    ]]--
-    
-    if thePlayer.x < worldView.scrollWindowX then
-        -- Just make sure that we have initialized something in the tilset for this tile
-        if(worldView.pixelPaddingX - 1 >= 0) then
-            -- Calculate how far out the player is
-            offDistance = thePlayer.x - worldView.scrollWindowX
-            worldView.pixelPaddingX = worldView.pixelPaddingX - offDistance * dt
-            if worldView.pixelPaddingX >= worldView.tileSize then
-                -- We have now padded a whole tile, update the tilePadding instead and reset the pixelPadding
-                worldView.pixelPaddingX = 0
-                worldView.tilePaddingX = worldView.tilePaddingX + 1
-            end
-        end
-    end
-    if thePlayer.x > worldView.scrollWindowW then
-        print((worldView.pixelPaddingX + 1).." <= "..worldView.tilesX)
-        if(worldView.pixelPaddingX + 1 <= worldView.tilesX) then
-            -- Calculate how far out the player is
-            offDistance = thePlayer.x + worldView.scrollWindowW
-            worldView.pixelPaddingX = worldView.pixelPaddingX + offDistance * dt
-            print(worldView.pixelPaddingX)
-            if worldView.pixelPaddingX >= worldView.tileSize then
-                -- We have now padded a whole tile, update the tilePadding instead and reset the pixelPadding
-                worldView.pixelPaddingX = 0
-                worldView.tilePaddingX = worldView.tilePaddingX - 1
-            end
-        end
-    end
     
 end
  
@@ -336,11 +300,11 @@ function love.draw()
     
     -- This is where we need to figure out which tiles to draw.
     
-    for i = worldView.tilePaddingX + 1, worldView.drawX + worldView.tilePaddingX do
-        for j = worldView.tilePaddingY + 1, worldView.drawY + worldView.tilePaddingY do
+    for i = worldView.tilePaddingX - 1, worldView.drawX + worldView.tilePaddingX + 1 do
+        for j = worldView.tilePaddingY - 1, worldView.drawY + worldView.tilePaddingY + 1 do
             if table[i][j] == 1 then
                 love.graphics.setColor(1, 1, 1)
-                love.graphics.rectangle("fill", (i - 1) * worldView.tileSize + worldView.pixelPaddingX, (j - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * worldView.tileSize - worldView.pixelPaddingX, (j - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
             end
         end
     end

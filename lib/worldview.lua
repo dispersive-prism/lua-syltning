@@ -20,8 +20,8 @@ function WorldView.setViewSize(x, y)
     
     WorldView.scrollWindowX = 2 * WorldView.tileSize
     WorldView.scrollWindowY = 2 * WorldView.tileSize
-    WorldView.scrollWindowW = (WorldView.tilesX - 2) * WorldView.tileSize
-    WorldView.scrollWindowH = (WorldView.tilesY - 2) * WorldView.tileSize
+    WorldView.scrollWindowW = (WorldView.drawX - 2) * WorldView.tileSize
+    WorldView.scrollWindowH = (WorldView.drawY - 2) * WorldView.tileSize
 end
 
 return WorldView
