@@ -43,20 +43,36 @@ end
 function love.update(dt)
     -- Set player speed based on keyboard input
     if love.keyboard.isDown('d') then
-        worldMap.tilePaddingX = worldMap.tilePaddingX + 1
-        print(worldMap.paddingX)
+        worldMap.pixelPaddingX = worldMap.pixelPaddingX - 1
+        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
+            worldMap.pixelPaddingX = 0
+            worldMap.tilePaddingX = worldMap.tilePaddingX + 1
+            print(worldMap.tilePaddingX)
+        end
     end
     if love.keyboard.isDown('a') then
-        worldMap.tilePaddingX = worldMap.tilePaddingX - 1
-        print(worldMap.paddingY)
+        worldMap.pixelPaddingX = worldMap.pixelPaddingX + 1
+        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
+            worldMap.pixelPaddingX = 0
+            worldMap.tilePaddingX = worldMap.tilePaddingX - 1
+            print(worldMap.tilePaddingX)
+        end
     end
     if love.keyboard.isDown('w') then
-        worldMap.tilePaddingY = worldMap.tilePaddingY - 1
-        print(worldMap.paddingX)
+        worldMap.pixelPaddingY = worldMap.pixelPaddingY + 1
+        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
+            worldMap.tilePaddingY = worldMap.tilePaddingY - 1
+            worldMap.pixelPaddingY = 0
+            print(worldMap.tilePaddingY)
+        end
     end 
     if love.keyboard.isDown('s') then
-        worldMap.tilePaddingY = worldMap.tilePaddingY + 1
-        print(worldMap.paddingY)
+        worldMap.pixelPaddingY = worldMap.pixelPaddingY - 1
+        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
+            worldMap.tilePaddingY = worldMap.tilePaddingY + 1
+            worldMap.pixelPaddingY = 0
+            print(worldMap.tilePaddingY)
+        end
     end
     
     worldMap.updatePaddedMap()
@@ -65,12 +81,14 @@ end
 function love.draw()
     -- Draw the whole grid
     
-    -- This is where we need to figure out which tiles to draw.
-    for i = 1, worldMap.drawX do
-        for j = 1, worldMap.drawY do
+    -- This is where we need to figure out which tiles to draw. Notice that we're starting from inded 0 (which is one tile outside the screen)
+    -- to cope with pixel padding. We're also drawing drawX/drawY + 1 for the same reasons. paddedMap is initiated to be +2 in x, y
+    for i = 0, worldMap.drawX + 1 do
+        for j = 0, worldMap.drawY + 1 do
             if worldMap.paddedMap[i][j] == 1 then
                 love.graphics.setColor(1, 1, 1)
-                love.graphics.rectangle("fill", (i - 1) * worldMap.tileSize, (j - 1) * worldMap.tileSize, worldMap.tileSize, worldMap.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * worldMap.tileSize + worldMap.pixelPaddingX,
+                    (j - 1) * worldMap.tileSize + worldMap.pixelPaddingY, worldMap.tileSize, worldMap.tileSize)
             end
         end
     end
