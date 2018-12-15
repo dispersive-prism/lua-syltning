@@ -79,19 +79,74 @@ function love.update(dt)
     end
     
     if love.keyboard.isDown('up') then
-        thePlayer.yPosition = thePlayer.yPosition - 1
+        thePlayer.yPosition = thePlayer.yPosition - 5
     end
     if love.keyboard.isDown('down') then
-        thePlayer.yPosition = thePlayer.yPosition + 1
+        thePlayer.yPosition = thePlayer.yPosition + 5
     end
     if love.keyboard.isDown('left') then
-        thePlayer.xPosition = thePlayer.xPosition - 1
+        thePlayer.xPosition = thePlayer.xPosition - 5
     end
     if love.keyboard.isDown('right') then
-        thePlayer.xPosition = thePlayer.xPosition + 1
+        thePlayer.xPosition = thePlayer.xPosition + 5
     end
+    
+
+    
+    -- Calculate relative delta x and relative delta y and update the padding depending on this
+    playerRelativeXPos = thePlayer.xPosition - thePlayer.width / 2 + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
+    playerRelativeYPos = thePlayer.yPosition - thePlayer.width / 2 + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
+    
+    middleX = (worldMap.drawX / 2) * worldMap.tileSize
+    middleY = (worldMap.drawY / 2) * worldMap.tileSize
+    
+    playerDeltaX = playerRelativeXPos - middleX
+    playerDeltaY = playerRelativeYPos - middleY
+    
+    allowedXDelta = 10
+    allowedYDelta = 10
+    
+    --print(playerDeltaX..", "..playerDeltaY)
+    
+    if playerDeltaX > allowedXDelta then
+        worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * 2 * dt)
+        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
+            worldMap.pixelPaddingX = 0
+            worldMap.tilePaddingX = worldMap.tilePaddingX + 1
+            --print(worldMap.tilePaddingX)
+        end        
+    end
+     
+
+    if playerDeltaX < -allowedXDelta then
+        worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * 2 * dt)
+        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
+            worldMap.pixelPaddingX = 0
+            worldMap.tilePaddingX = worldMap.tilePaddingX - 1
+            --print(worldMap.tilePaddingX)
+        end        
+    end
+
         
-    worldMap.updatePaddedMap()
+    if playerDeltaY > allowedYDelta then
+        worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * 2 * dt)
+        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
+            worldMap.tilePaddingY = worldMap.tilePaddingY + 1
+            worldMap.pixelPaddingY = 0
+            --print(worldMap.tilePaddingY)
+        end        
+    end
+    
+    if playerDeltaY < -allowedYDelta then
+        worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * 2 * dt)
+        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
+            worldMap.tilePaddingY = worldMap.tilePaddingY - 1
+            worldMap.pixelPaddingY = 0
+            --print(worldMap.tilePaddingY)
+        end        
+    end
+
+    worldMap.updatePaddedMap()   
 end
  
 function love.draw()
