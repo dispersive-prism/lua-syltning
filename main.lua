@@ -78,6 +78,19 @@ function love.update(dt)
         end
     end
     
+    if love.keyboard.isDown('up') then
+        thePlayer.yPosition = thePlayer.yPosition - 1
+    end
+    if love.keyboard.isDown('down') then
+        thePlayer.yPosition = thePlayer.yPosition + 1
+    end
+    if love.keyboard.isDown('left') then
+        thePlayer.xPosition = thePlayer.xPosition - 1
+    end
+    if love.keyboard.isDown('right') then
+        thePlayer.xPosition = thePlayer.xPosition + 1
+    end
+        
     worldMap.updatePaddedMap()
 end
  
