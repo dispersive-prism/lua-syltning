@@ -10,6 +10,9 @@ worldMap.initMap(20, 10)
 function love.load()    
     -- Set the window size
     love.window.setMode(worldMap.tileSize * worldMap.drawX, worldMap.tileSize * worldMap.drawY)
+    
+    thePlayer.xPosition = 100
+    thePlayer.yPosition = 100
         
     -- Set one row to 1 (for solid blocks)
     for x = 1, worldMap.tilesX do
@@ -47,7 +50,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX + 1
-            print(worldMap.tilePaddingX)
+            --print(worldMap.tilePaddingX)
         end
     end
     if love.keyboard.isDown('a') then
@@ -55,7 +58,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
-            print(worldMap.tilePaddingX)
+            --print(worldMap.tilePaddingX)
         end
     end
     if love.keyboard.isDown('w') then
@@ -63,7 +66,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
             worldMap.pixelPaddingY = 0
-            print(worldMap.tilePaddingY)
+            --print(worldMap.tilePaddingY)
         end
     end 
     if love.keyboard.isDown('s') then
@@ -71,7 +74,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
             worldMap.pixelPaddingY = 0
-            print(worldMap.tilePaddingY)
+            --print(worldMap.tilePaddingY)
         end
     end
     
@@ -101,8 +104,12 @@ function love.draw()
     --love.graphics.rectangle("fill", (checkedX - 1) * worldView.tileSize, (checkedY - 1) * worldView.tileSize, worldView.tileSize, worldView.tileSize)
     
     -- Draw the player
-    -- love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
-    -- love.graphics.rectangle("fill", thePlayer.x - thePlayer.width / 2 - worldView.pixelPaddingX - worldView.tilePaddingX * worldView.tileSize, thePlayer.y - thePlayer.height / 2, thePlayer.width, thePlayer.height)
+    love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
+    playerRelativeXPos = thePlayer.xPosition - thePlayer.width / 2 + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
+    playerRelativeYPos = thePlayer.yPosition - thePlayer.width / 2 + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
+    
+    
+    love.graphics.rectangle("fill", playerRelativeXPos, playerRelativeYPos, thePlayer.width, thePlayer.height)
     
     -- Which tile is the player currently in?
     --tileX = math.floor(thePlayer.x / worldView.tileSize)
