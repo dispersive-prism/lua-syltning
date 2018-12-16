@@ -1,4 +1,4 @@
--- A Löve2d game including a platform and a mustache
+-- A Löve2d game including a platform and a mustache.. not yet..
 
 thePlayer = require("lib.player")
 theWorld = require("lib.world")
