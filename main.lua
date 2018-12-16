@@ -171,8 +171,9 @@ function love.update(dt)
         thePlayer.ySpeed = thePlayer.maxFallSpeed
     end
     
-    nextX = math.floor(thePlayer.xPosition + thePlayer.xSpeed * dt)
-    nextY = math.floor(thePlayer.yPosition + thePlayer.ySpeed * dt)
+    nextX = thePlayer.xPosition + thePlayer.xSpeed * dt
+    nextY = thePlayer.yPosition + thePlayer.ySpeed * dt
+    
     
     -- Check for collisions in the tiles around the player
     tileX = math.floor(nextX / worldMap.tileSize) + 1
