@@ -1,6 +1,5 @@
 -- A Löve2d game including a platform and a mustache
 
---tileset = require("lib.tileset")
 thePlayer = require("lib.player")
 theWorld = require("lib.world")
 worldMap = require("lib.worldMap")
