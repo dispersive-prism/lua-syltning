@@ -127,14 +127,13 @@ function love.update(dt)
     -- Pixelpadding sets tilePadding
     -- 
 
-    print(worldMap.pixelPaddingX)
     if playerDeltaX > theWorld.allowedXDelta and (worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX or worldMap.pixelPaddingX > 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
         -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX + 1
-            print("X pad: "..worldMap.tilePaddingX)
+            --print("X pad: "..worldMap.tilePaddingX)
         end        
     end
 
@@ -143,7 +142,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
-            print("X pad: "..worldMap.tilePaddingX)
+            --print("X pad: "..worldMap.tilePaddingX)
         end        
     end 
         
@@ -152,7 +151,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
             worldMap.pixelPaddingY = 0
-            print("Y pad:"..worldMap.tilePaddingY)
+            --print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
@@ -161,7 +160,7 @@ function love.update(dt)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
             worldMap.pixelPaddingY = 0
-            print("Y pad:"..worldMap.tilePaddingY)
+            --print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
@@ -286,8 +285,8 @@ function love.update(dt)
                         if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
                             if px < w then
                                 thePlayer.lastGrounded = love.timer.getTime()
-                                --thePlayer.ySpeed = 0
-                                --nextY = y - thePlayer.height / 2
+                                thePlayer.ySpeed = 0
+                                nextY = y - thePlayer.height / 2
                             end
                         end
                     end
@@ -312,8 +311,8 @@ function love.update(dt)
                             -- Are we still grounded in terms of x? Do we have a foot on the ground
                             if pw > x then
                                 thePlayer.lastGrounded = love.timer.getTime()
-                                --thePlayer.ySpeed = 0
-                                --nextY = y - thePlayer.height / 2
+                                thePlayer.ySpeed = 0
+                                nextY = y - thePlayer.height / 2
                             end
                         end
                     end
