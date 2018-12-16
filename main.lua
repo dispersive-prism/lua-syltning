@@ -123,8 +123,12 @@ function love.update(dt)
     playerDeltaY = playerRelativeYPos - middleY
     
     --print("PDX: "..playerDeltaX..", PDY: "..playerDeltaY)
-    
-    if playerDeltaX > theWorld.allowedXDelta and worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX then
+    -- The delta sets pixelPadding
+    -- Pixelpadding sets tilePadding
+    -- 
+
+    print(worldMap.pixelPaddingX)
+    if playerDeltaX > theWorld.allowedXDelta and (worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX or worldMap.pixelPaddingX > 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
         -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
@@ -134,18 +138,16 @@ function love.update(dt)
         end        
     end
 
-    if playerDeltaX < -theWorld.allowedXDelta and worldMap.tilePaddingX - 1 > -1 then
+    if playerDeltaX < -theWorld.allowedXDelta and (worldMap.tilePaddingX - 1 > -1 or worldMap.pixelPaddingX < 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
-        -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
             print("X pad: "..worldMap.tilePaddingX)
         end        
-    end
-
+    end 
         
-    if playerDeltaY > theWorld.allowedYDelta and worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY then
+    if playerDeltaY > theWorld.allowedYDelta and (worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY or worldMap.pixelPaddingY > 0) then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
@@ -154,7 +156,7 @@ function love.update(dt)
         end        
     end
     
-    if playerDeltaY < -theWorld.allowedYDelta and worldMap.tilePaddingY - 1 > -1 then
+    if playerDeltaY < -theWorld.allowedYDelta and (worldMap.tilePaddingY - 1 > -1 or worldMap.pixelPaddingY < 0) then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
