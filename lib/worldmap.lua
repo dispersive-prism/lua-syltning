@@ -15,13 +15,17 @@ WorldMap = {
 function WorldMap.initMap(x, y)
     WorldMap.tilesX = x
     WorldMap.tilesY = y
-    for i = 1, x do
+    for i = 0, x + 1 do
         WorldMap.fullMap[i] = {}
-        for j = 1, y do
-           WorldMap.fullMap[i][j] = 0 
+        for j = 0, y + 1 do
+            if i > 0 and i <= x and j > 0 and j <= y then
+                WorldMap.fullMap[i][j] = 0
+            else
+                WorldMap.fullMap[i][j] = 1
+            end
         end
     end
-
+    
     WorldMap.updatePaddedMap()
 end
 

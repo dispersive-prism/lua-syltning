@@ -16,6 +16,7 @@ function love.load()
     -- Set one row to 1 (for solid blocks)
     for x = 1, worldMap.tilesX do
         worldMap.fullMap[x][10] = 1
+        --worldMap.fullMap[x][9] = 1
     end
         
     worldMap.fullMap[10][2] = 1
@@ -45,52 +46,72 @@ end
 function love.update(dt)
     -- Set player speed based on keyboard input
     if love.keyboard.isDown('d') then
-        worldMap.pixelPaddingX = worldMap.pixelPaddingX - 1
-        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
-            worldMap.pixelPaddingX = 0
-            worldMap.tilePaddingX = worldMap.tilePaddingX + 1
-            --print(worldMap.tilePaddingX)
+        if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
+            thePlayer.xSpeed = thePlayer.xSpeed + thePlayer.acceleration * dt
+        end
+        if thePlayer.xSpeed > thePlayer.runSpeed then
+            thePlayer.xSpeed = thePlayer.runSpeed
+        end
+        -- Apply drag if we're running in the opposite direciton
+        if thePlayer.xSpeed < 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('a') then
-        worldMap.pixelPaddingX = worldMap.pixelPaddingX + 1
-        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
-            worldMap.pixelPaddingX = 0
-            worldMap.tilePaddingX = worldMap.tilePaddingX - 1
-            --print(worldMap.tilePaddingX)
+        if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
+            thePlayer.xSpeed = thePlayer.xSpeed - thePlayer.acceleration * dt
+        end
+        if -thePlayer.xSpeed > thePlayer.runSpeed then
+            thePlayer.xSpeed = -thePlayer.runSpeed
+        end
+        -- Apply drag if we're running in the opposite direction to the key
+        if thePlayer.xSpeed > 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('w') then
-        worldMap.pixelPaddingY = worldMap.pixelPaddingY + 1
-        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
-            worldMap.tilePaddingY = worldMap.tilePaddingY - 1
-            worldMap.pixelPaddingY = 0
-            --print(worldMap.tilePaddingY)
+        if thePlayer.lastJumpTime == 0 then
+                thePlayer.lastJumpTime = love.timer.getTime()
         end
-    end 
-    if love.keyboard.isDown('s') then
-        worldMap.pixelPaddingY = worldMap.pixelPaddingY - 1
-        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
-            worldMap.tilePaddingY = worldMap.tilePaddingY + 1
-            worldMap.pixelPaddingY = 0
-            --print(worldMap.tilePaddingY)
+        if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter and thePlayer.lastGrounded ~= 0 
+            and love.timer.getTime() - thePlayer.lastGrounded <= thePlayer.groundedDelay then        
+            thePlayer.ySpeed = thePlayer.jumpHeight
+            thePlayer.lastJumpTime = love.timer.getTime()
+            thePlayer.lastGrounded = 0
         end
     end
-    
-    if love.keyboard.isDown('up') then
-        thePlayer.yPosition = thePlayer.yPosition - 5
+    if not love.keyboard.isDown('w') then
+       thePlayer.lastJumpTime = love.timer.getTime()
+       -- Nothing
     end
-    if love.keyboard.isDown('down') then
-        thePlayer.yPosition = thePlayer.yPosition + 5
+    if not love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
+        -- Apply drag to the player
+        if thePlayer.xSpeed > 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
+            if thePlayer.xSpeed < 0 then
+                thePlayer.xSpeed = 0
+            end
+        elseif thePlayer.xSpeed > 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
+        end
+        
     end
-    if love.keyboard.isDown('left') then
-        thePlayer.xPosition = thePlayer.xPosition - 5
+    if not love.keyboard.isDown('a') and not love.keyboard.isDown('w') then
+        if thePlayer.xSpeed < 0 then
+            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
+            if thePlayer.xSpeed > 0 then
+                thePlayer.xSpeed = 0
+            end
+        elseif thePlayer.xSpeed < 0 then
+            thePLayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
+        end
     end
-    if love.keyboard.isDown('right') then
-        thePlayer.xPosition = thePlayer.xPosition + 5
+    if love.keyboard.isDown('g') then
+        thePlayer.xPosition = 200
+        thePlayer.yPosition = -100
+        thePlayer.ySpeed = 0
+        thePlayer.xSpeed = 0
     end
-    
-
     
     -- Calculate relative delta x and relative delta y and update the padding depending on this
     playerRelativeXPos = thePlayer.xPosition - thePlayer.width / 2 + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
@@ -104,8 +125,6 @@ function love.update(dt)
     
     allowedXDelta = 10
     allowedYDelta = 10
-    
-    --print(playerDeltaX..", "..playerDeltaY)
     
     if playerDeltaX > allowedXDelta then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * 2 * dt)
@@ -144,7 +163,165 @@ function love.update(dt)
             --print(worldMap.tilePaddingY)
         end        
     end
+    
+    -- Apply gravity to the player
+    thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity
 
+    if thePlayer.ySpeed > thePlayer.maxFallSpeed then
+        thePlayer.ySpeed = thePlayer.maxFallSpeed
+    end
+    
+    nextX = math.floor(thePlayer.xPosition + thePlayer.xSpeed * dt)
+    nextY = math.floor(thePlayer.yPosition + thePlayer.ySpeed * dt)
+    
+    -- Check for collisions in the tiles around the player
+    tileX = math.floor(nextX / worldMap.tileSize) + 1
+    tileY = math.floor(nextY / worldMap.tileSize) + 1
+    
+    px = nextX - thePlayer.width / 2
+    py = nextY - thePlayer.height / 2
+    pw = px + thePlayer.width
+    ph = py + thePlayer.height    
+    
+    -- Check all the tiles surrounding the player
+    for ctX = tileX - 1, tileX + 1 do
+        for ctY = tileY - 1, tileY + 1 do
+            if ctX >= 0 and ctX <= worldMap.tilesX + 1 and ctY >= 0 and ctY <= worldMap.tilesY + 1 and worldMap.fullMap[ctX][ctY] == 1 then
+                x = (ctX - 1) * worldMap.tileSize
+                y = (ctY - 1) * worldMap.tileSize
+                w = worldMap.tileSize + x
+                h = worldMap.tileSize + y
+                
+                if (pw > x and pw < w and py > y and py < h) or
+                   (pw > x and pw < w and ph > y and ph < h) or
+                   (pw > x and pw < w and py > y and py < h) or
+                   (px > x and pw < w and ph > y and ph < h) or
+                   (px > x and pw < w and py > y and ph < h) or
+                   (px > x and pw < w and py > y and py < h) or
+                   (px > x and px < w and ph > y and ph < h) or
+                   (px > x and px < w and py > y and ph < h) or
+                   (px > x and px < w and py > y and py < h) then
+
+                    -- Figure out which side that collided
+                    if ctX < tileX and ctY < tileY then
+                        -- Upper left. Cancel any ySpeed and reset the player
+                        --print("Upper left")
+                        if thePlayer.xSpeed < 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = w + thePlayer.width / 2
+                        end
+                        if worldMap.fullMap[tileX][tileY - 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 then
+                            -- We're facing the scenario where were jumping head first into a corner
+                            if thePlayer.ySpeed < 0 then
+                                thePlayer.ySpeed = 0
+                                nextY = h + thePlayer.height / 2
+                            end
+                        end    
+                    end
+                    if ctX == tileX and ctY < tileY then
+                        -- Upper middle. Cancel any ySpeed and reset the player
+                        --print("Upper middle")
+                        if thePlayer.ySpeed < 0 then
+                            thePlayer.ySpeed = 0
+                            nextY = h + thePlayer.height / 2    
+                        end
+                    end
+                    if ctX > tileX and ctY < tileY then
+                        -- Upper right. Cancel any negative ySpeed (player jumping) and reset the player
+                        --print("Upper right")
+                        if thePlayer.xSpeed > 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = x - thePlayer.width / 2
+                        end
+                        if worldMap.fullMap[tileX][tileY - 1] == 0 and worldMap.fullMap[tileX + 1][tileY] == 0 then
+                            if thePlayer.ySpeed < 0 then
+                                thePlayer.ySpeed = 0
+                                nextY = h + thePlayer.height / 2
+                            end
+                        end
+                    end
+                    if ctX < tileX and ctY == tileY then
+                        -- Middle left. Cancel any xSpeed and reset the player
+                        --print("Middle left")
+                        thePlayer.xSpeed = 0
+                        nextX = w + thePlayer.width / 2        
+                    end
+                    if ctX == tileX and ctY == tileY then
+                        --print("Middle")
+                        -- Middle. This is a tricky situation. Clipping through
+                        if thePlayer.ySpeed > 0 then
+                            thePlayer.ySpeed = 0
+                            nextY = y - thePlayer.height / 2
+                        end
+                        if thePlayer.ySpeed < 0 then
+                            thePlayer.ySpeed = 0
+                            nextY = h - thePlayer.height / 2
+                        end
+                        if thePlayer.xSpeed > 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = x - thePlayer.width / 2
+                        end
+                        if thePlayer.xSpeed < 0 then
+                            thePlayer.xSpeed = 0
+                            nextX = w + thePlayer.width / 2
+                        end
+                    end
+                    if ctX > tileX and ctY == tileY then
+                        -- Middle right.
+                        --print("Middle right")
+                        thePlayer.xSpeed = 0
+                        nextX = x - thePlayer.width / 2
+                    end
+                    if ctX < tileX and ctY > tileY then
+                        --print("Lower left")
+                        if worldMap.fullMap[tileX+1][tileY] == 1 then
+                            thePlayer.ySpeed = 0
+                            thePlayer.airborne = 0
+                            nextY = y - thePlayer.height / 2
+                        end
+                        checkedX = tileX
+                        checkedY = tileY + 1
+                        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
+                            if px < w then
+                                thePlayer.lastGrounded = love.timer.getTime()
+                                thePlayer.ySpeed = 0
+                                nextY = y - thePlayer.height / 2
+                            end
+                        end
+                    end
+                    if ctX == tileX and ctY > tileY then
+                        -- Lower middle.
+                        --print("Lower middle")
+                        thePlayer.ySpeed = 0
+                        nextY = y - thePlayer.height / 2
+                        -- Also set the lastGrounded
+                        thePlayer.lastGrounded = love.timer.getTime()
+                    end
+                    if ctX > tileX and ctY > tileY then
+                        --print("Lower right ")
+                        if worldMap.fullMap[tileX - 1][tileY] == 1 then
+                            thePlayer.ySpeed = 0
+                            nextY = y - thePlayer.height / 2
+                        end
+                        -- Check if we're at a cliff side
+                        --checkedX = tileX
+                        --checkedY = tileY + 1
+                        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX + 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
+                            -- Are we still grounded in terms of x? Do we have a foot on the ground
+                            if pw > x then
+                                thePlayer.lastGrounded = love.timer.getTime()
+                                thePlayer.ySpeed = 0
+                                nextY = y - thePlayer.height / 2
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    thePlayer.xPosition = nextX
+    thePlayer.yPosition = nextY
     worldMap.updatePaddedMap()   
 end
  
@@ -173,7 +350,7 @@ function love.draw()
     -- Draw the player
     love.graphics.setColor(200 / 255, 100 / 255, 100 / 255)
     playerRelativeXPos = thePlayer.xPosition - thePlayer.width / 2 + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
-    playerRelativeYPos = thePlayer.yPosition - thePlayer.width / 2 + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
+    playerRelativeYPos = thePlayer.yPosition - thePlayer.height / 2 + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
     
     
     love.graphics.rectangle("fill", playerRelativeXPos, playerRelativeYPos, thePlayer.width, thePlayer.height)
