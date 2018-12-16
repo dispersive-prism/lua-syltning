@@ -4,8 +4,8 @@ World = {
     drag = 800,
     scrollSpeedX = 3,
     scrollSpeedY = 3,
-    allowedXDelta = 10,
-    allowedYDelta = 10
+    allowedXDelta = 20,
+    allowedYDelta = 20
 }
 
 return World

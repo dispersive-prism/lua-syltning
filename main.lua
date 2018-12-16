@@ -113,35 +113,34 @@ function love.update(dt)
     end
     
     -- Calculate relative delta x and relative delta y and update the padding depending on this
-    playerRelativeXPos = thePlayer.xPosition - thePlayer.width / 2 + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
-    playerRelativeYPos = thePlayer.yPosition - thePlayer.width / 2 + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
-    
-    playerTilePos = math.floor(thePlayer.xPosition / worldMap.tileSize) + 1
-    
+    playerRelativeXPos = (thePlayer.xPosition - thePlayer.width / 2) + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
+    playerRelativeYPos = (thePlayer.yPosition - thePlayer.width / 2) + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
+        
     middleX = (worldMap.drawX / 2) * worldMap.tileSize
     middleY = (worldMap.drawY / 2) * worldMap.tileSize
     
     playerDeltaX = playerRelativeXPos - middleX
     playerDeltaY = playerRelativeYPos - middleY
     
-    --if playerDeltaX > theWorld.allowedXDelta then
+    --print("PDX: "..playerDeltaX..", PDY: "..playerDeltaY)
+    
     if playerDeltaX > theWorld.allowedXDelta and worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
+        -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
-            -- Could be set to 0, but results in jerky movements....
-            worldMap.pixelPaddingX = 0 -- worldMap.tileSize - math.abs(worldMap.pixelPaddingX)
+            worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX + 1
-            --print("X pad: "..worldMap.tilePaddingX)
+            print("X pad: "..worldMap.tilePaddingX)
         end        
     end
 
-    --if playerDeltaX < -theWorld.allowedXDelta then
     if playerDeltaX < -theWorld.allowedXDelta and worldMap.tilePaddingX - 1 > -1 then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
+        -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
-            worldMap.pixelPaddingX = 0 -- worldMap.tileSize - math.abs(worldMap.pixelPaddingX)
+            worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
-            --print("X pad: "..worldMap.tilePaddingX)
+            print("X pad: "..worldMap.tilePaddingX)
         end        
     end
 
@@ -150,8 +149,8 @@ function love.update(dt)
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
-            worldMap.pixelPaddingY = 0 --worldMap.tileSize - math.abs(worldMap.pixelPaddingY)
-            --print("Y pad:"..worldMap.tilePaddingY)
+            worldMap.pixelPaddingY = 0
+            print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
@@ -159,8 +158,8 @@ function love.update(dt)
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
-            worldMap.pixelPaddingY = 0 -- -(worldMap.tileSize - math.abs(worldMap.pixelPaddingY))
-            --print("Y pad:"..worldMap.tilePaddingY)
+            worldMap.pixelPaddingY = 0
+            print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
@@ -245,7 +244,7 @@ function love.update(dt)
                         -- Middle left. Cancel any xSpeed and reset the player
                         --print("Middle left")
                         thePlayer.xSpeed = 0
-                        nextX = w + thePlayer.width / 2        
+                        nextX = w + thePlayer.width / 2
                     end
                     if ctX == tileX and ctY == tileY then
                         --print("Middle")
@@ -276,17 +275,17 @@ function love.update(dt)
                     if ctX < tileX and ctY > tileY then
                         --print("Lower left")
                         if worldMap.fullMap[tileX+1][tileY] == 1 then
-                            thePlayer.ySpeed = 0
-                            thePlayer.airborne = 0
+                            --thePlayer.ySpeed = 0
+                            --thePlayer.airborne = 0
                             nextY = y - thePlayer.height / 2
                         end
                         checkedX = tileX
                         checkedY = tileY + 1
-                        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
+                        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
                             if px < w then
                                 thePlayer.lastGrounded = love.timer.getTime()
-                                thePlayer.ySpeed = 0
-                                nextY = y - thePlayer.height / 2
+                                --thePlayer.ySpeed = 0
+                                --nextY = y - thePlayer.height / 2
                             end
                         end
                     end
@@ -301,18 +300,18 @@ function love.update(dt)
                     if ctX > tileX and ctY > tileY then
                         --print("Lower right ")
                         if worldMap.fullMap[tileX - 1][tileY] == 1 then
-                            thePlayer.ySpeed = 0
-                            nextY = y - thePlayer.height / 2
+                            --thePlayer.ySpeed = 0
+                            --nextY = y - thePlayer.height / 2
                         end
                         -- Check if we're at a cliff side
                         --checkedX = tileX
                         --checkedY = tileY + 1
-                        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX + 1][tileY] == 0 and thePlayer.ySpeed >= 0 then
+                        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX + 1][tileY] == 0 and thePlayer.ySpeed > 0 then
                             -- Are we still grounded in terms of x? Do we have a foot on the ground
                             if pw > x then
                                 thePlayer.lastGrounded = love.timer.getTime()
-                                thePlayer.ySpeed = 0
-                                nextY = y - thePlayer.height / 2
+                                --thePlayer.ySpeed = 0
+                                --nextY = y - thePlayer.height / 2
                             end
                         end
                     end

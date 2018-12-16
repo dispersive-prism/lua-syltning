@@ -10,9 +10,9 @@ Player = {
     acceleration = 600,
     runSpeed = 350,
     lastJumpTime = 0,
-    allowJumpAfter = 0.005,
+    allowJumpAfter = 0.01,
     lastGrounded = 0,
-    groundedDelay = 0.10,
+    groundedDelay = 0.20,
     moving = 0
 }
 
