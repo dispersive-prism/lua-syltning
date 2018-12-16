@@ -102,7 +102,7 @@ function love.update(dt)
                 thePlayer.xSpeed = 0
             end
         elseif thePlayer.xSpeed < 0 then
-            thePLayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
+            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('g') then
@@ -121,31 +121,25 @@ function love.update(dt)
     middleX = (worldMap.drawX / 2) * worldMap.tileSize
     middleY = (worldMap.drawY / 2) * worldMap.tileSize
     
-    --middleX = middleX - worldMap.tilePaddingX * worldMap.tileSize
-    
-    -- Make sure to adjust this if there is no more "world" in any direction
-    --middleX = (worldMap.drawX / 2) * worldMap.tileSize
-    -- middleY = worldMap.drawY / 2
-    
     playerDeltaX = playerRelativeXPos - middleX
     playerDeltaY = playerRelativeYPos - middleY
     
     --if playerDeltaX > theWorld.allowedXDelta then
     if playerDeltaX > theWorld.allowedXDelta and worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
-        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
-            worldMap.pixelPaddingX = 0
+        if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
+            -- Could be set to 0, but results in jerky movements....
+            worldMap.pixelPaddingX = 0 -- worldMap.tileSize - math.abs(worldMap.pixelPaddingX)
             worldMap.tilePaddingX = worldMap.tilePaddingX + 1
             --print("X pad: "..worldMap.tilePaddingX)
         end        
     end
-     
 
     --if playerDeltaX < -theWorld.allowedXDelta then
     if playerDeltaX < -theWorld.allowedXDelta and worldMap.tilePaddingX - 1 > -1 then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
-        if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
-            worldMap.pixelPaddingX = 0
+        if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
+            worldMap.pixelPaddingX = 0 -- worldMap.tileSize - math.abs(worldMap.pixelPaddingX)
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
             --print("X pad: "..worldMap.tilePaddingX)
         end        
@@ -154,18 +148,18 @@ function love.update(dt)
         
     if playerDeltaY > theWorld.allowedYDelta and worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
-        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
+        if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
-            worldMap.pixelPaddingY = 0
+            worldMap.pixelPaddingY = 0 --worldMap.tileSize - math.abs(worldMap.pixelPaddingY)
             --print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
     if playerDeltaY < -theWorld.allowedYDelta and worldMap.tilePaddingY - 1 > -1 then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
-        if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
+        if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
-            worldMap.pixelPaddingY = 0
+            worldMap.pixelPaddingY = 0 -- -(worldMap.tileSize - math.abs(worldMap.pixelPaddingY))
             --print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
