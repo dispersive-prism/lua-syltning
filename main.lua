@@ -4,7 +4,7 @@ thePlayer = require("lib.player")
 theWorld = require("lib.world")
 worldMap = require("lib.worldMap")
 
-worldMap.initMap(20, 10)
+worldMap.initMap(30, 10)
 
 function love.load()    
     -- Set the window size
@@ -16,7 +16,6 @@ function love.load()
     -- Set one row to 1 (for solid blocks)
     for x = 1, worldMap.tilesX do
         worldMap.fullMap[x][10] = 1
-        --worldMap.fullMap[x][9] = 1
     end
         
     worldMap.fullMap[10][2] = 1
@@ -108,7 +107,7 @@ function love.update(dt)
     end
     if love.keyboard.isDown('g') then
         thePlayer.xPosition = 200
-        thePlayer.yPosition = -100
+        thePlayer.yPosition = 100
         thePlayer.ySpeed = 0
         thePlayer.xSpeed = 0
     end
@@ -117,50 +116,57 @@ function love.update(dt)
     playerRelativeXPos = thePlayer.xPosition - thePlayer.width / 2 + worldMap.pixelPaddingX - worldMap.tilePaddingX * worldMap.tileSize
     playerRelativeYPos = thePlayer.yPosition - thePlayer.width / 2 + worldMap.pixelPaddingY - worldMap.tilePaddingY * worldMap.tileSize
     
+    playerTilePos = math.floor(thePlayer.xPosition / worldMap.tileSize) + 1
+    
     middleX = (worldMap.drawX / 2) * worldMap.tileSize
     middleY = (worldMap.drawY / 2) * worldMap.tileSize
+    
+    --middleX = middleX - worldMap.tilePaddingX * worldMap.tileSize
+    
+    -- Make sure to adjust this if there is no more "world" in any direction
+    --middleX = (worldMap.drawX / 2) * worldMap.tileSize
+    -- middleY = worldMap.drawY / 2
     
     playerDeltaX = playerRelativeXPos - middleX
     playerDeltaY = playerRelativeYPos - middleY
     
-    allowedXDelta = 10
-    allowedYDelta = 10
-    
-    if playerDeltaX > allowedXDelta then
-        worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * 2 * dt)
+    --if playerDeltaX > theWorld.allowedXDelta then
+    if playerDeltaX > theWorld.allowedXDelta and worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX then
+        worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
         if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX + 1
-            --print(worldMap.tilePaddingX)
+            --print("X pad: "..worldMap.tilePaddingX)
         end        
     end
      
 
-    if playerDeltaX < -allowedXDelta then
-        worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * 2 * dt)
+    --if playerDeltaX < -theWorld.allowedXDelta then
+    if playerDeltaX < -theWorld.allowedXDelta and worldMap.tilePaddingX - 1 > -1 then
+        worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
         if math.abs(worldMap.pixelPaddingX) > worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
-            --print(worldMap.tilePaddingX)
+            --print("X pad: "..worldMap.tilePaddingX)
         end        
     end
 
         
-    if playerDeltaY > allowedYDelta then
-        worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * 2 * dt)
+    if playerDeltaY > theWorld.allowedYDelta and worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY then
+        worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
             worldMap.pixelPaddingY = 0
-            --print(worldMap.tilePaddingY)
+            --print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
-    if playerDeltaY < -allowedYDelta then
-        worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * 2 * dt)
+    if playerDeltaY < -theWorld.allowedYDelta and worldMap.tilePaddingY - 1 > -1 then
+        worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         if math.abs(worldMap.pixelPaddingY) > worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
             worldMap.pixelPaddingY = 0
-            --print(worldMap.tilePaddingY)
+            --print("Y pad:"..worldMap.tilePaddingY)
         end        
     end
     
