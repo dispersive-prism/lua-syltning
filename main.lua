@@ -43,6 +43,7 @@ function love.load()
 end
  
 function love.update(dt)
+    print(dt)
     -- Set player speed based on keyboard input
     if love.keyboard.isDown('d') then
         if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
@@ -90,8 +91,6 @@ function love.update(dt)
             if thePlayer.xSpeed < 0 then
                 thePlayer.xSpeed = 0
             end
-        elseif thePlayer.xSpeed > 0 then
-            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
         end
         
     end
@@ -101,8 +100,6 @@ function love.update(dt)
             if thePlayer.xSpeed > 0 then
                 thePlayer.xSpeed = 0
             end
-        elseif thePlayer.xSpeed < 0 then
-            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('g') then
