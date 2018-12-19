@@ -3,12 +3,22 @@
 thePlayer = require("lib.player")
 theWorld = require("lib.world")
 worldMap = require("lib.worldMap")
+background = require("lib.background")
 
 worldMap.initMap(30, 10)
 
 function love.load()    
     -- Set the window size
     love.window.setMode(worldMap.tileSize * worldMap.drawX, worldMap.tileSize * worldMap.drawY)
+    
+    -- Initialize the background
+    background.initBackground(2, 2)
+    
+    -- Set some tiles to 1
+    background.background[1][1] = 1
+    background.background[2][2] = 1
+    
+    background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 1)
     
     thePlayer.xPosition = 100
     thePlayer.yPosition = 100
@@ -327,6 +337,17 @@ function love.update(dt)
 end
  
 function love.draw()
+    -- Draw the background
+    for i = 1, background.tilesX do
+        for j = 1, background.tilesY do
+            if background.repeatedBackground[i][j] == 1 then
+                love.graphics.setColor(1, 0.5, 1, 0.1)
+                love.graphics.rectangle("fill", (i - 1) * background.tileSize, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
+            end
+        end
+    end
+    
+    
     -- Draw the whole grid
     
     -- This is where we need to figure out which tiles to draw. Notice that we're starting from inded 0 (which is one tile outside the screen)
