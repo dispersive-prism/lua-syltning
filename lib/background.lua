@@ -69,7 +69,44 @@ function Background.initRepeatedBackground(scaleFactor, tileSize, windowXTiles, 
 end
 
 -- A function to rebuild the repeated background by shifting it x-wise
-function Background.shiftX(x)
+function Background.shiftX(shiftX)
+    if shiftX < 0 then shiftX = Background.tilesX + shiftX end
+    
+    -- Decide which cunk of the array to put in the front of the shifted array
+    chunkStart = Background.tilesX - shiftX + 1
+    chunkEnd = Background.tilesX
+    chunkLength = chunkEnd - chunkStart + 1
+    
+    --print("Chunk start: "..chunkStart)
+    --print("Chunk end: "..chunkEnd)
+    --print("Chunk length: "..chunkLength)
+    
+    shiftedArray = {}
+    
+    -- Sweep through the chunk and populate the new array with the initial chunks
+    x = 1
+    for i = chunkStart, chunkEnd do
+        shiftedArray[x] = {}
+        for j = 1, Background.tilesY do
+            shiftedArray[x][j] = Background.repeatedBackground[i][j]
+            --print("Shiftedarray["..x.."]["..j.."] = Background.repeatedBackground["..i.."]["..j.."]")
+        end
+        x = x + 1
+        if x > chunkLength then
+            break
+        end
+    end
+    
+    -- Now make sure that we add the rest
+    for i = shiftX + 1, Background.tilesX do
+        shiftedArray[i] = {}
+        for j = 1, Background.tilesY do
+            shiftedArray[i][j] = Background.repeatedBackground[i - shiftX][j]
+            --print("Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..(i - shiftX).."]["..j.."]")
+        end
+    end
+    
+    Background.repeatedBackground = shiftedArray
 end
 
 return Background

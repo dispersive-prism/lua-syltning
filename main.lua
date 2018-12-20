@@ -19,6 +19,7 @@ function love.load()
     background.background[2][2] = 1
     
     background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 1)
+    background.shiftX(1)
     
     thePlayer.xPosition = 100
     thePlayer.yPosition = 100
@@ -53,6 +54,10 @@ function love.load()
 end
  
 function love.update(dt)
+    if love.keyboard.isDown('left') then
+       background.shiftX(1) 
+    end
+    
     -- Set player speed based on keyboard input
     if love.keyboard.isDown('d') then
         if math.abs(thePlayer.xSpeed) < thePlayer.runSpeed then
