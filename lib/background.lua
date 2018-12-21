@@ -76,9 +76,9 @@ function Background.shiftX(shiftX)
     chunkEnd = Background.tilesX + 1
     chunkLength = chunkEnd - chunkStart + 1
     
-    --print("Chunk start: "..chunkStart)
-    --print("Chunk end: "..chunkEnd)
-    --print("Chunk length: "..chunkLength)
+    -- print("Chunk start: "..chunkStart)
+    -- print("Chunk end: "..chunkEnd)
+    -- print("Chunk length: "..chunkLength)
     
     shiftedArray = {}
     
@@ -86,9 +86,9 @@ function Background.shiftX(shiftX)
     x = 0
     for i = chunkStart, chunkEnd do
         shiftedArray[x] = {}
-        for j = 1, Background.tilesY do
+        for j = 0, Background.tilesY + 1 do
             shiftedArray[x][j] = Background.repeatedBackground[i][j]
-            --print("Shiftedarray["..x.."]["..j.."] = Background.repeatedBackground["..i.."]["..j.."]")
+            -- print("Shiftedarray["..x.."]["..j.."] = Background.repeatedBackground["..i.."]["..j.."]")
         end
         x = x + 1
         if x > chunkLength - 1 then
@@ -101,11 +101,44 @@ function Background.shiftX(shiftX)
         shiftedArray[i] = {}
         for j = 0, Background.tilesY + 1 do
             shiftedArray[i][j] = Background.repeatedBackground[i - shiftX][j]
-            --print("Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..(i - shiftX).."]["..j.."]")
+            -- print("Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..(i - shiftX).."]["..j.."]")
         end
     end
     
     Background.repeatedBackground = shiftedArray
 end
+
+-- Can be concatenated together with shiftX later on. Code duplication for now...
+-- A function to rebuild the repeated background by shifting it x-wise
+function Background.shiftY(shiftY)
+    -- -1 => 20 + 1 -1 = 20
+    if shiftY < 0 then shiftY = Background.tilesY + shiftY end
+    
+    -- Decide which cunk of the array to put in the front of the shifted array
+    chunkStart = Background.tilesY + 1 - shiftY + 1
+    chunkEnd = Background.tilesY + 1
+    chunkLength = chunkEnd - chunkStart + 1
+    
+    shiftedArray = {}
+    
+    --for i = chunkStart, chunkEnd do
+    for i = 0, Background.tilesX + 1 do
+        shiftedArray[i] = {}
+        for j = 0, Background.tilesY + 1 do
+            if j < shiftY then -- 0 < 1
+                --print(j.." < "..shiftY)
+                shiftedArray[i][j] = Background.repeatedBackground[i][#Background.repeatedBackground - j]
+                --print("1. Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..i.."]["..(#Background.repeatedBackground - j).."]")
+            else -- 1
+                --print(j.." >= "..shiftY)
+                shiftedArray[i][j] = Background.repeatedBackground[i][j - shiftY]
+                --print("2. Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..i.."]["..(j - shiftY).."]")
+            end
+        end
+    end
+    
+    Background.repeatedBackground = shiftedArray
+end
+
 
 return Background

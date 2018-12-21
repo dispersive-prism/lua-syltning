@@ -19,6 +19,7 @@ function love.load()
     background.background[2][2] = 1
     
     background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 4)
+    --background.shiftY(-5)
     
     thePlayer.xPosition = 100
     thePlayer.yPosition = 100
@@ -55,6 +56,9 @@ end
 function love.update(dt)
     if love.keyboard.isDown('left') then
        background.shiftX(1) 
+    end
+    if love.keyboard.isDown('up') then
+        background.shiftY(1)
     end
     
     -- Set player speed based on keyboard input
@@ -172,20 +176,30 @@ function love.update(dt)
         
     if playerDeltaY > theWorld.allowedYDelta and (worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY or worldMap.pixelPaddingY > 0) then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
+        background.yPadding = background.yPadding - (playerDeltaY * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
             worldMap.pixelPaddingY = 0
             --print("Y pad:"..worldMap.tilePaddingY)
-        end        
+        end
+        if math.abs(background.yPadding) >= background.tileSize then
+            background.yPadding = 0
+            background.shift(1)
+        end
     end
     
     if playerDeltaY < -theWorld.allowedYDelta and (worldMap.tilePaddingY - 1 > -1 or worldMap.pixelPaddingY < 0) then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
+        background.yPadding = background.yPadding - (playerDeltaY * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
             worldMap.pixelPaddingY = 0
             --print("Y pad:"..worldMap.tilePaddingY)
-        end        
+        end
+        if math.abs(background.yPadding) >= background.tileSize then
+            background.yPadding = 0
+            background.shift(-1)
+        end
     end
     
     -- Apply gravity to the player
