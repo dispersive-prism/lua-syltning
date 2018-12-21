@@ -2,7 +2,7 @@
 
 thePlayer = require("lib.player")
 theWorld = require("lib.world")
-worldMap = require("lib.worldMap")
+worldMap = require("lib.worldmap")
 Background = require("lib.background")
 
 worldMap.initMap(30, 10)
