@@ -40,15 +40,11 @@ function love.load()
     bgClose.background[1][19] = 1
     bgClose.background[1][20] = 1
     bgClose.background[1][9] = 1
-    bgClose.background[2][10] = 1
+
     bgClose.background[2][11] = 1
-    bgClose.background[2][12] = 1
     bgClose.background[2][13] = 1
-    bgClose.background[2][14] = 1
     bgClose.background[2][15] = 1
-    bgClose.background[2][16] = 1
     bgClose.background[2][17] = 1
-    bgClose.background[2][18] = 1
     bgClose.background[2][19] = 1
     bgClose.background[2][20] = 1
 
