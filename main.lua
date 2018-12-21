@@ -6,6 +6,8 @@ worldMap = require("lib.worldMap")
 Background = require("lib.background")
 
 worldMap.initMap(30, 10)
+worldMap.drawX = 10
+worldMap.drawY = 8
 
 function love.load()    
     -- Set the window size
@@ -22,7 +24,7 @@ function love.load()
     background.background[4][4] = 1
     
     background:initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 4)
-    --background.shiftY(-5)
+    --background:shiftY(-1)
     
     bgClose = Background:new()
     bgClose:initBackground(2, 20)
@@ -87,8 +89,14 @@ function love.update(dt)
     if love.keyboard.isDown('left') then
        background:shiftX(1) 
     end
+    if love.keyboard.isDown('right') then
+        background:shiftX(-1)
+    end
     if love.keyboard.isDown('up') then
         background:shiftY(1)
+    end
+    if love.keyboard.isDown('down') then
+        background:shiftY(-1)
     end
     
     -- Set player speed based on keyboard input
@@ -225,17 +233,18 @@ function love.update(dt)
         end
         if math.abs(background.yPadding) >= background.tileSize then
             background.yPadding = 0
-            background:shiftY(1)
+            background:shiftY(-1)
         end
         if math.abs(bgClose.yPadding) >= bgClose.tileSize then
             bgClose.yPadding = 0
-            bgClose:shiftY(1)
+            bgClose:shiftY(-1)
         end        
     end
     
     if playerDeltaY < -theWorld.allowedYDelta and (worldMap.tilePaddingY - 1 > -1 or worldMap.pixelPaddingY < 0) then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         background.yPadding = background.yPadding - (playerDeltaY * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
+        bgClose.yPadding = bgClose.yPadding - (playerDeltaY * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY - 1
             worldMap.pixelPaddingY = 0
@@ -243,8 +252,12 @@ function love.update(dt)
         end
         if math.abs(background.yPadding) >= background.tileSize then
             background.yPadding = 0
-            background:shiftY(-1)
+            background:shiftY(1)
         end
+        if math.abs(bgClose.yPadding) >= bgClose.tileSize then
+            bgClose.yPadding = 0
+            bgClose:shiftY(1)
+        end        
     end
     
     -- Apply gravity to the player
@@ -415,7 +428,7 @@ function love.draw()
         for j = 0, background.tilesY + 1 do
             if background.repeatedBackground[i][j] == 1 then
                 love.graphics.setColor(1, 0.5, 1, 0.1)
-                love.graphics.rectangle("fill", (i - 1) * background.tileSize + background.xPadding, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * background.tileSize + background.xPadding, (j - 1) * background.tileSize + background.yPadding, background.tileSize, background.tileSize)
             end
         end
     end
@@ -424,7 +437,7 @@ function love.draw()
         for j = 0, bgClose.tilesY + 1 do
             if bgClose.repeatedBackground[i][j] == 1 then
                 love.graphics.setColor(0.3, 0.2, 0.3, 0.9)
-                love.graphics.rectangle("fill", (i - 1) * bgClose.tileSize + bgClose.xPadding, (j - 1) * bgClose.tileSize, bgClose.tileSize, bgClose.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * bgClose.tileSize + bgClose.xPadding, (j - 1) * bgClose.tileSize + bgClose.yPadding, bgClose.tileSize, bgClose.tileSize)
             end
         end
     end
@@ -444,7 +457,8 @@ function love.draw()
     end
     
     -- Debug
-    --[[love.graphics.setColor(1, 1, 1)
+    --[[
+    love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("line", 0, 0, 220, 220)
     for i = 0, background.tilesX + 1 do
         for j = 0, background.tilesY + 1 do
@@ -453,8 +467,18 @@ function love.draw()
                 love.graphics.rectangle("fill", i * 10, j * 10, 10, 10)
             end
         end
-    end]]--
+    end
     
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.rectangle("line", 0, 0, 220, 220)
+    for i = 0, bgClose.tilesX + 1 do
+        for j = 0, bgClose.tilesY + 1 do
+            if bgClose.repeatedBackground[i][j] == 1 then
+                love.graphics.setColor(1, 0, 0, 1)
+                love.graphics.rectangle("fill", i * 10 + 250, j * 10, 10, 10)
+            end
+        end
+    end   --]]
     
     --love.graphics.setColor(1, 0.2, 0)
     --love.graphics.print("Mannby version!", 90, 200, 0, 3)

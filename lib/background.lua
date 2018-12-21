@@ -71,7 +71,7 @@ function Background:initRepeatedBackground(scaleFactor, tileSize, windowXTiles, 
     end
     
     --print("Result background size: "..#Background.background..", "..#Background.background[1])
-    --print("Resulting backgroundRepSize: "..#Background.repeatedBackground..", "..#Background.repeatedBackground[1])
+    --print("Resulting backgroundRepSize: "..#self.repeatedBackground..", "..#self.repeatedBackground[1])
     --print("Resulting tile size: "..Background.tileSize)
 end
 
@@ -123,7 +123,9 @@ end
 -- A function to rebuild the repeated background by shifting it x-wise
 function Background:shiftY(shiftY)
     -- -1 => 20 + 1 -1 = 20
-    if shiftY < 0 then shiftY = self.tilesY + shiftY + 1 end
+    if shiftY < 0 then shiftY = #self.repeatedBackground[0] + 1 + shiftY end
+    
+    --print("shiftY: "..shiftY)
     
     -- Decide which cunk of the array to put in the front of the shifted array
     chunkStart = self.tilesY + 1 - shiftY + 1
@@ -132,18 +134,15 @@ function Background:shiftY(shiftY)
     
     shiftedArray = {}
     
-    --for i = chunkStart, chunkEnd do
     for i = 0, self.tilesX + 1 do
+        -- The chunk to chop is shiftY
         shiftedArray[i] = {}
         for j = 0, self.tilesY + 1 do
-            if j < shiftY then -- 0 < 1
-                --print(j.." < "..shiftY)
-                shiftedArray[i][j] = self.repeatedBackground[i][#self.repeatedBackground - j]
-                --print("1. Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..i.."]["..(#Background.repeatedBackground - j).."]")
-            else -- 1
-                --print(j.." >= "..shiftY)
+            if j >= shiftY then
                 shiftedArray[i][j] = self.repeatedBackground[i][j - shiftY]
-                --print("2. Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..i.."]["..(j - shiftY).."]")
+            else
+                shiftedArray[i][j] = self.repeatedBackground[i][#self.repeatedBackground[i] + 1 - shiftY + j]
+                --print("2. Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..i.."]["..(#self.repeatedBackground[i] - shiftY + j).."]")
             end
         end
     end
