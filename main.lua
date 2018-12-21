@@ -18,8 +18,7 @@ function love.load()
     background.background[1][1] = 1
     background.background[2][2] = 1
     
-    background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 1)
-    background.shiftX(1)
+    background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 4)
     
     thePlayer.xPosition = 100
     thePlayer.yPosition = 100
@@ -144,21 +143,31 @@ function love.update(dt)
 
     if playerDeltaX > theWorld.allowedXDelta and (worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX or worldMap.pixelPaddingX > 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
+        background.xPadding = background.xPadding - (playerDeltaX * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
         -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX + 1
             --print("X pad: "..worldMap.tilePaddingX)
-        end        
+        end
+        if math.abs(background.xPadding) >= background.tileSize then
+            background.xPadding = 0
+            background.shiftX(1)
+        end
     end
 
     if playerDeltaX < -theWorld.allowedXDelta and (worldMap.tilePaddingX - 1 > -1 or worldMap.pixelPaddingX < 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
+        background.xPadding = background.xPadding - (playerDeltaX * theWorld.scrollSpeedX * dt) * (1 / background.zDistance)
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
             --print("X pad: "..worldMap.tilePaddingX)
-        end        
+        end
+        if math.abs(background.xPadding) >= background.tileSize then
+            background.xPadding = 0
+            background.shiftX(-1)
+        end
     end 
         
     if playerDeltaY > theWorld.allowedYDelta and (worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY or worldMap.pixelPaddingY > 0) then
@@ -347,7 +356,7 @@ function love.draw()
         for j = 1, background.tilesY do
             if background.repeatedBackground[i][j] == 1 then
                 love.graphics.setColor(1, 0.5, 1, 0.1)
-                love.graphics.rectangle("fill", (i - 1) * background.tileSize, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * background.tileSize  + background.xPadding, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
             end
         end
     end

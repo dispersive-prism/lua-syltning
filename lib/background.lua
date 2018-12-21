@@ -5,7 +5,7 @@ Background = {
     yPadding = 0,
     xPadding = 0,
     -- What should the perceived zDistance be of this background?
-    zDistance = 0,
+    zDistance = 1,
     -- An array which will keep the tilemap that will be repeated...
     background = {},
     -- ...in this array based on configuration (which covers one screen)
@@ -32,7 +32,11 @@ function Background.initRepeatedBackground(scaleFactor, tileSize, windowXTiles, 
     --print("The scale factor that we want to use is: "..scaleFactor)
     --print("The tile size of the parent window is: "..tileSize)
     
-    Background.zDistance = zDistance
+    if zDistance ~= 0 then
+        Background.zDistance = zDistance
+    else
+        Background.zDistance = 1
+    end
     
     arrayToFillX = math.floor(windowXTiles * scaleFactor)
     arrayToFillY = math.floor(windowYTiles * scaleFactor)
@@ -47,14 +51,9 @@ function Background.initRepeatedBackground(scaleFactor, tileSize, windowXTiles, 
     bgIMax = #Background.background
     bgJMax = #Background.background[bgI]
     
-    for i = 1, arrayToFillX do
+    for i = 0, arrayToFillX + 1 do
         Background.repeatedBackground[i] = {}
-        for j = 1, arrayToFillY do
-            if Background.background[bgI][bgJ] == 1 then
-                --print(bgI..", "..bgJ.." equals 1")
-            else
-                --print(bgI..", "..bgJ.." does not equal 1")
-            end
+        for j = 0, arrayToFillY + 1 do
             Background.repeatedBackground[i][j] = Background.background[bgI][bgJ]
             bgJ = bgJ + 1
             if bgJ > bgJMax then bgJ = 1 end
@@ -73,8 +72,8 @@ function Background.shiftX(shiftX)
     if shiftX < 0 then shiftX = Background.tilesX + shiftX end
     
     -- Decide which cunk of the array to put in the front of the shifted array
-    chunkStart = Background.tilesX - shiftX + 1
-    chunkEnd = Background.tilesX
+    chunkStart = Background.tilesX + 1 - shiftX + 1
+    chunkEnd = Background.tilesX + 1
     chunkLength = chunkEnd - chunkStart + 1
     
     --print("Chunk start: "..chunkStart)
@@ -84,7 +83,7 @@ function Background.shiftX(shiftX)
     shiftedArray = {}
     
     -- Sweep through the chunk and populate the new array with the initial chunks
-    x = 1
+    x = 0
     for i = chunkStart, chunkEnd do
         shiftedArray[x] = {}
         for j = 1, Background.tilesY do
@@ -92,15 +91,15 @@ function Background.shiftX(shiftX)
             --print("Shiftedarray["..x.."]["..j.."] = Background.repeatedBackground["..i.."]["..j.."]")
         end
         x = x + 1
-        if x > chunkLength then
+        if x > chunkLength - 1 then
             break
         end
     end
     
     -- Now make sure that we add the rest
-    for i = shiftX + 1, Background.tilesX do
+    for i = shiftX, Background.tilesX + 1 do
         shiftedArray[i] = {}
-        for j = 1, Background.tilesY do
+        for j = 0, Background.tilesY + 1 do
             shiftedArray[i][j] = Background.repeatedBackground[i - shiftX][j]
             --print("Shiftedarray["..i.."]["..j.."] = Background.repeatedBackground["..(i - shiftX).."]["..j.."]")
         end
