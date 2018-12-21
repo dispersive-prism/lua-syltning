@@ -3,7 +3,7 @@
 thePlayer = require("lib.player")
 theWorld = require("lib.world")
 worldMap = require("lib.worldMap")
-background = require("lib.background")
+Background = require("lib.background")
 
 worldMap.initMap(30, 10)
 
@@ -12,7 +12,8 @@ function love.load()
     love.window.setMode(worldMap.tileSize * worldMap.drawX, worldMap.tileSize * worldMap.drawY)
     
     -- Initialize the background
-    background.initBackground(4, 4)
+    background = Background:new()
+    background:initBackground(4, 4)
     
     -- Set some tiles to 1
     background.background[1][1] = 1
@@ -20,8 +21,39 @@ function love.load()
     background.background[3][3] = 1
     background.background[4][4] = 1
     
-    background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 4)
+    background:initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 4)
     --background.shiftY(-5)
+    
+    bgClose = Background:new()
+    bgClose:initBackground(2, 20)
+    
+    bgClose.background[1][9] = 1
+    bgClose.background[1][10] = 1
+    bgClose.background[1][11] = 1
+    bgClose.background[1][12] = 1
+    bgClose.background[1][13] = 1
+    bgClose.background[1][14] = 1
+    bgClose.background[1][15] = 1
+    bgClose.background[1][16] = 1
+    bgClose.background[1][17] = 1
+    bgClose.background[1][18] = 1
+    bgClose.background[1][19] = 1
+    bgClose.background[1][20] = 1
+    bgClose.background[1][9] = 1
+    bgClose.background[2][10] = 1
+    bgClose.background[2][11] = 1
+    bgClose.background[2][12] = 1
+    bgClose.background[2][13] = 1
+    bgClose.background[2][14] = 1
+    bgClose.background[2][15] = 1
+    bgClose.background[2][16] = 1
+    bgClose.background[2][17] = 1
+    bgClose.background[2][18] = 1
+    bgClose.background[2][19] = 1
+    bgClose.background[2][20] = 1
+
+    bgClose:initRepeatedBackground(1.5, worldMap.tileSize, worldMap.drawX, worldMap.drawY, (1.5 / 2) * 4)
+    
     
     thePlayer.xPosition = 100
     thePlayer.yPosition = 100
@@ -57,10 +89,10 @@ end
  
 function love.update(dt)
     if love.keyboard.isDown('left') then
-       background.shiftX(1) 
+       background:shiftX(1) 
     end
     if love.keyboard.isDown('up') then
-        background.shiftY(1)
+        background:shiftY(1)
     end
     
     -- Set player speed based on keyboard input
@@ -150,6 +182,7 @@ function love.update(dt)
     if playerDeltaX > theWorld.allowedXDelta and (worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX or worldMap.pixelPaddingX > 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
         background.xPadding = background.xPadding - (playerDeltaX * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
+        bgClose.xPadding = bgClose.xPadding - (playerDeltaX * theWorld.scrollSpeedY * dt) * (1 / bgClose.zDistance)
         -- added after and
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
@@ -158,13 +191,18 @@ function love.update(dt)
         end
         if math.abs(background.xPadding) >= background.tileSize then
             background.xPadding = 0
-            background.shiftX(-1)
+            background:shiftX(-1)
         end
+        if math.abs(bgClose.xPadding) >= bgClose.tileSize then
+            bgClose.xPadding = 0
+            bgClose:shiftX(-1)
+        end        
     end
 
     if playerDeltaX < -theWorld.allowedXDelta and (worldMap.tilePaddingX - 1 > -1 or worldMap.pixelPaddingX < 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
         background.xPadding = background.xPadding - (playerDeltaX * theWorld.scrollSpeedX * dt) * (1 / background.zDistance)
+        bgClose.xPadding = bgClose.xPadding - (playerDeltaX * theWorld.scrollSpeedX * dt) * (1 / bgClose.zDistance)
         if math.abs(worldMap.pixelPaddingX) >= worldMap.tileSize then
             worldMap.pixelPaddingX = 0
             worldMap.tilePaddingX = worldMap.tilePaddingX - 1
@@ -172,13 +210,18 @@ function love.update(dt)
         end
         if math.abs(background.xPadding) >= background.tileSize then
             background.xPadding = 0
-            background.shiftX(1)
+            background:shiftX(1)
         end
+        if math.abs(bgClose.xPadding) >= bgClose.tileSize then
+            bgClose.xPadding = 0
+            bgClose:shiftX(1)
+        end        
     end 
         
     if playerDeltaY > theWorld.allowedYDelta and (worldMap.tilePaddingY < worldMap.tilesY - worldMap.drawY or worldMap.pixelPaddingY > 0) then
         worldMap.pixelPaddingY = worldMap.pixelPaddingY - (playerDeltaY * theWorld.scrollSpeedY * dt)
         background.yPadding = background.yPadding - (playerDeltaY * theWorld.scrollSpeedY * dt) * (1 / background.zDistance)
+        bgClose.yPadding = bgClose.yPadding - (playerDeltaY * theWorld.scrollSpeedY * dt) * (1 / bgClose.zDistance)
         if math.abs(worldMap.pixelPaddingY) >= worldMap.tileSize then
             worldMap.tilePaddingY = worldMap.tilePaddingY + 1
             worldMap.pixelPaddingY = 0
@@ -186,8 +229,12 @@ function love.update(dt)
         end
         if math.abs(background.yPadding) >= background.tileSize then
             background.yPadding = 0
-            background.shift(1)
+            background:shiftY(1)
         end
+        if math.abs(bgClose.yPadding) >= bgClose.tileSize then
+            bgClose.yPadding = 0
+            bgClose:shiftY(1)
+        end        
     end
     
     if playerDeltaY < -theWorld.allowedYDelta and (worldMap.tilePaddingY - 1 > -1 or worldMap.pixelPaddingY < 0) then
@@ -200,7 +247,7 @@ function love.update(dt)
         end
         if math.abs(background.yPadding) >= background.tileSize then
             background.yPadding = 0
-            background.shift(-1)
+            background:shiftY(-1)
         end
     end
     
@@ -368,8 +415,8 @@ end
  
 function love.draw()
     -- Draw the background
-    for i = 1, background.tilesX do
-        for j = 1, background.tilesY do
+    for i = 0, background.tilesX + 1 do
+        for j = 0, background.tilesY + 1 do
             if background.repeatedBackground[i][j] == 1 then
                 love.graphics.setColor(1, 0.5, 1, 0.1)
                 love.graphics.rectangle("fill", (i - 1) * background.tileSize + background.xPadding, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
@@ -377,6 +424,14 @@ function love.draw()
         end
     end
     
+    for i = 0, bgClose.tilesX + 1 do
+        for j = 0, bgClose.tilesY + 1 do
+            if bgClose.repeatedBackground[i][j] == 1 then
+                love.graphics.setColor(0.3, 0.2, 0.3, 0.9)
+                love.graphics.rectangle("fill", (i - 1) * bgClose.tileSize + bgClose.xPadding, (j - 1) * bgClose.tileSize, bgClose.tileSize, bgClose.tileSize)
+            end
+        end
+    end
     
     -- Draw the whole grid
     
