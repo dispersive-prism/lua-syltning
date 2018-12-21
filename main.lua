@@ -12,11 +12,13 @@ function love.load()
     love.window.setMode(worldMap.tileSize * worldMap.drawX, worldMap.tileSize * worldMap.drawY)
     
     -- Initialize the background
-    background.initBackground(2, 2)
+    background.initBackground(4, 4)
     
     -- Set some tiles to 1
     background.background[1][1] = 1
     background.background[2][2] = 1
+    background.background[3][3] = 1
+    background.background[4][4] = 1
     
     background.initRepeatedBackground(2, worldMap.tileSize, worldMap.drawX, worldMap.drawY, 4)
     --background.shiftY(-5)
@@ -156,7 +158,7 @@ function love.update(dt)
         end
         if math.abs(background.xPadding) >= background.tileSize then
             background.xPadding = 0
-            background.shiftX(1)
+            background.shiftX(-1)
         end
     end
 
@@ -170,7 +172,7 @@ function love.update(dt)
         end
         if math.abs(background.xPadding) >= background.tileSize then
             background.xPadding = 0
-            background.shiftX(-1)
+            background.shiftX(1)
         end
     end 
         
@@ -370,7 +372,7 @@ function love.draw()
         for j = 1, background.tilesY do
             if background.repeatedBackground[i][j] == 1 then
                 love.graphics.setColor(1, 0.5, 1, 0.1)
-                love.graphics.rectangle("fill", (i - 1) * background.tileSize  + background.xPadding, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
+                love.graphics.rectangle("fill", (i - 1) * background.tileSize + background.xPadding, (j - 1) * background.tileSize, background.tileSize, background.tileSize)
             end
         end
     end
@@ -389,6 +391,19 @@ function love.draw()
             end
         end
     end
+    
+    -- Debug
+    --[[love.graphics.setColor(1, 1, 1)
+    love.graphics.rectangle("line", 0, 0, 220, 220)
+    for i = 0, background.tilesX + 1 do
+        for j = 0, background.tilesY + 1 do
+            if background.repeatedBackground[i][j] == 1 then
+                love.graphics.setColor(1, 0, 0, 1)
+                love.graphics.rectangle("fill", i * 10, j * 10, 10, 10)
+            end
+        end
+    end]]--
+    
     
     --love.graphics.setColor(1, 0.2, 0)
     --love.graphics.print("Mannby version!", 90, 200, 0, 3)
