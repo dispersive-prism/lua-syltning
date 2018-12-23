@@ -146,19 +146,11 @@ function love.update(dt)
             if thePlayer.xSpeed < 0 then
                 thePlayer.xSpeed = 0
             end
-        elseif thePlayer.xSpeed > 0 then
-            thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
-        end
-        
-    end
-    if not love.keyboard.isDown('a') and not love.keyboard.isDown('w') then
-        if thePlayer.xSpeed < 0 then
+        elseif thePlayer.xSpeed < 0 then
             thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
             if thePlayer.xSpeed > 0 then
                 thePlayer.xSpeed = 0
             end
-        elseif thePlayer.xSpeed < 0 then
-            thePlayer.xSpeed = thePlayer.xSpeed - theWorld.drag * dt
         end
     end
     if love.keyboard.isDown('g') then
@@ -177,11 +169,6 @@ function love.update(dt)
     
     playerDeltaX = playerRelativeXPos - middleX
     playerDeltaY = playerRelativeYPos - middleY
-    
-    --print("PDX: "..playerDeltaX..", PDY: "..playerDeltaY)
-    -- The delta sets pixelPadding
-    -- Pixelpadding sets tilePadding
-    -- 
 
     if playerDeltaX > theWorld.allowedXDelta and (worldMap.tilePaddingX < worldMap.tilesX - worldMap.drawX or worldMap.pixelPaddingX > 0) then
         worldMap.pixelPaddingX = worldMap.pixelPaddingX - (playerDeltaX * theWorld.scrollSpeedX * dt)
