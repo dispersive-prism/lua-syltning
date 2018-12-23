@@ -7,7 +7,7 @@ Background = require("lib.background")
 
 worldMap.initMap(30, 10)
 worldMap.drawX = 10
-worldMap.drawY = 8
+worldMap.drawY = 10
 
 function love.load()    
     -- Set the window size
