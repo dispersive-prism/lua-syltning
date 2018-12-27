@@ -9,8 +9,13 @@ WorldMap = {
     tilePaddingY = 0,
     pixelPaddingX = 0,
     pixelPaddingY = 0,
-    tileSize = 50
+    tileSize = 50,
+    backgrounds = {}
 }
+
+function WorldMap.addBackground(aBackground)
+    table.insert(WorldMap.backgrounds, aBackground)
+end
 
 function WorldMap.initMap(x, y)
     WorldMap.tilesX = x

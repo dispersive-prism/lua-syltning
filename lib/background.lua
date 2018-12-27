@@ -16,11 +16,16 @@ function Background:new(o)
         -- Might be a representation of another repeated version of the repeated background
         paddedBackground = {},
         tilesX = 0,
-        tilesY = 0        
+        tilesY = 0,
+        color = { 1, 1, 1, 1 }
     }
     setmetatable(o, self) 
     self.__index = self
     return o
+end
+
+function Background:setColor(color)
+    self.color = color
 end
 
 -- Initialized a placeholder for one background element

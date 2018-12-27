@@ -111,11 +111,9 @@ function middleRight(ctX, ctY, tileX, tileY, thePlayer, worldMap)
 end
 
 function lowerLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
-    -- For solid blocks
+    -- For solid blocks (1)
     if worldMap.fullMap[ctX][ctY] == 1 then
         if worldMap.fullMap[tileX+1][tileY] == 1 then
-            --thePlayer.ySpeed = 0
-            --thePlayer.airborne = 0
             nextY = y - thePlayer.height / 2
         end
         if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
@@ -126,15 +124,33 @@ function lowerLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
             end
         end
     end
+    -- For bridge blocks (2) (Code duplication for now)
+    if worldMap.fullMap[ctX][ctY] == 2 then
+        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
+            if px < w then
+                thePlayer.lastGrounded = love.timer.getTime()
+                thePlayer.ySpeed = 0
+                nextY = y - thePlayer.height / 2
+            end
+        end
+    end    
 end
 
 function lowerMiddle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
-    -- For solid blocks
+    -- For solid blocks (1)
     if worldMap.fullMap[ctX][ctY] == 1 then
         thePlayer.ySpeed = 0
         nextY = y - thePlayer.height / 2
         -- Also set the lastGrounded
         thePlayer.lastGrounded = love.timer.getTime()
+    end
+    -- For bridge blocks (2) (Code duplication for now)
+    if worldMap.fullMap[ctX][ctY] == 2 then
+        if thePlayer.ySpeed > 0 then
+            thePlayer.ySpeed = 0
+            nextY = y - thePlayer.height / 2
+            thePlayer.lastGrounded = love.timer.getTime()
+        end
     end
 end
 
@@ -155,4 +171,14 @@ function lowerRight(ctX, ctY, tileX, tileY, thePlayer, worldMap)
             end
         end
     end
+    -- For bridge blocks (2) (Code duplication for now)
+    if worldMap.fullMap[ctX][ctY] == 2 then
+        if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
+            if px < w then
+                thePlayer.lastGrounded = love.timer.getTime()
+                thePlayer.ySpeed = 0
+                nextY = y - thePlayer.height / 2
+            end
+        end
+    end   
 end
