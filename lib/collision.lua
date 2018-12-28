@@ -80,10 +80,6 @@ function middleLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
 end
 
 function middle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
-    -- For air blocks
-    if worldMap.fullMap[ctX][ctY] == 0 then
-        thePlayer.onLadder = false
-    end
     -- For solid blocks
     if worldMap.fullMap[ctX][ctY] == 1 then
         if thePlayer.ySpeed > 0 then
@@ -118,10 +114,15 @@ function middle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
             thePlayer.climbingUp = false
             thePlayer.climbingDown = false
         end
-    --else
-        --thePlayer.onLadder = false
-        --thePlayer.climbingUp = false
-        --thePlayer.climbingDown = false
+    end 
+    if worldMap.fullMap[ctX][ctY] == 4 and worldMap.fullMap[tileX][tileY - 1] == 0 and thePlayer.inWater then
+        if thePlayer.ySpeed < 0 then
+            thePlayer.ySpeed = thePlayer.jumpHeight / 2
+        end
+    elseif worldMap.fullMap[ctX][ctY] == 4 then
+        thePlayer.inWater = true
+    else
+        thePlayer.inWater = false
     end
 end
 
@@ -157,7 +158,7 @@ function lowerLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
                 thePlayer.dropDown = false
             end
         end
-    end    
+    end
 end
 
 function lowerMiddle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
@@ -181,24 +182,15 @@ function lowerMiddle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
     if worldMap.fullMap[ctX][ctY] == 3 and worldMap.fullMap[tileX][tileY] ~= 3 then
         thePlayer.lastGrounded = love.timer.getTime()
         -- If we're not trying to climb down, remain here.
-        -- This will also cause some snapping in position. Will be covered by animation
-        if thePlayer.graspingUp then --and love.timer.getTime() - thePlayer.lastClimbTime < thePlayer.allowAirClimbFor then
-            --print("here "..(love.timer.getTime() - thePlayer.lastClimbTime))
-            --if(thePlayer.ySpeed < -1) then
-                --thePlayer.ySpeed = thePlayer.jumpHeight / 2
-            -- thePlayer.climbingUp = false
-            --thePlayer.climbingUp = false
-            --thePlayer.graspingUp = 0
+        if thePlayer.graspingUp then
             if thePlayer.ySpeed > 0 then
                 thePlayer.ySpeed = 0
                 nextY = y - thePlayer.height / 2
             end
         elseif thePlayer.graspingDown then
-            --print("here2")
             thePlayer.climbingDown = true
             thePlayer.lastClimbTime = love.timer.getTime()
         else
-            --print("here3")
             thePlayer.ySpeed = 0
             nextY = y - thePlayer.height / 2
             thePlayer.lastClimbTime = love.timer.getTime()
@@ -235,5 +227,5 @@ function lowerRight(ctX, ctY, tileX, tileY, thePlayer, worldMap)
                 nextY = y - thePlayer.height / 2
             end
         end
-    end   
+    end 
 end

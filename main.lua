@@ -92,6 +92,13 @@ function love.load()
     worldMap.fullMap[11][8] = 3
     worldMap.fullMap[11][7] = 3
     worldMap.fullMap[11][6] = 3
+    worldMap.fullMap[7][9] = 4
+    worldMap.fullMap[8][9] = 4
+    worldMap.fullMap[9][9] = 4
+    worldMap.fullMap[7][8] = 4
+    worldMap.fullMap[8][8] = 4
+    worldMap.fullMap[9][8] = 4
+    
     
     
     worldMap.updatePaddedMap()
@@ -159,12 +166,22 @@ function love.update(dt)
     
     -- Apply gravity to the player (unless he/she is climbing)
     if love.timer.getTime() - thePlayer.lastClimbTime > thePlayer.allowAirClimbFor then
-        thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity * dt
-
-        -- Cap the fall speed
-        if thePlayer.ySpeed > thePlayer.maxFallSpeed then
-            thePlayer.ySpeed = thePlayer.maxFallSpeed
+        -- Half the gravity when in water
+        if thePlayer.inWater then
+            thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity * dt * 0.25
+            -- Cap the fall speed
+            if thePlayer.ySpeed > thePlayer.maxFallSpeed / 4 then
+                thePlayer.ySpeed = thePlayer.maxFallSpeed / 4
+            end            
+        else
+            thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity * dt
+            -- Cap the fall speed
+            if thePlayer.ySpeed > thePlayer.maxFallSpeed then
+                thePlayer.ySpeed = thePlayer.maxFallSpeed
+            end 
         end
+            
+
     elseif thePlayer.climbingUp then
         thePlayer.ySpeed = thePlayer.ySpeed - thePlayer.climbAcceleration * dt
         if thePlayer.ySpeed < -thePlayer.maxClimbSpeed then
@@ -251,7 +268,11 @@ function love.draw()
                 love.graphics.setColor(1, 0, 1, 0.5)
                 love.graphics.rectangle("fill", (i - 1) * worldMap.tileSize + worldMap.pixelPaddingX,
                     (j - 1) * worldMap.tileSize + worldMap.pixelPaddingY, worldMap.tileSize, worldMap.tileSize)                
-            end
+            elseif worldMap.paddedMap[i][j] == 4 then
+                love.graphics.setColor(0.5, 0.5, 1, 0.4)
+                love.graphics.rectangle("fill", (i - 1) * worldMap.tileSize + worldMap.pixelPaddingX,
+                    (j - 1) * worldMap.tileSize + worldMap.pixelPaddingY, worldMap.tileSize, worldMap.tileSize)                
+            end            
         end
     end
     
@@ -340,12 +361,15 @@ function jumpAction(thePlayer, dt)
     if thePlayer.lastJumpTime == 0 then
             thePlayer.lastJumpTime = love.timer.getTime()
     end
-    if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter and thePlayer.lastGrounded ~= 0 
+    if love.timer.getTime() - thePlayer.lastJumpTime >= thePlayer.allowJumpAfter and thePlayer.lastGrounded ~= 0 and not thePlayer.inWater
         and love.timer.getTime() - thePlayer.lastGrounded <= thePlayer.groundedDelay then        
         thePlayer.ySpeed = thePlayer.jumpHeight
         thePlayer.lastJumpTime = love.timer.getTime()
         thePlayer.lastGrounded = 0
-    end    
+    elseif love.timer.getTime() - thePlayer.lastSwimStroke >= thePlayer.allowSwimStrokeAfter and thePlayer.inWater then
+        thePlayer.ySpeed = thePlayer.jumpHeight / 3
+        thePlayer.lastSwimStroke = love.timer.getTime()
+    end
 end
 
 function upAction(thePlayer, dt)
