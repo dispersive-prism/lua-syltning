@@ -7,8 +7,11 @@ I am aware that there is dead code/code duplication in places and that a lot of 
 * Basic collision detection in place. This still needs some additional work.
 * Parrallax scrolling with tile based backgrounds in place.
 * Basic level in place
+
 ..* Now contains a bridge
+
 ..** Now contains a pool of water
+
 ..* Now contains a ladder
 
 ## Controls
