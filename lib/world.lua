@@ -1,7 +1,8 @@
 World = {
     -- Gravity negative due to fact that y axis is inverted
-    gravity = -33.5,
+    gravity = -2800,
     drag = 800,
+    climbDrag = 1600,
     scrollSpeedX = 3,
     scrollSpeedY = 3,
     allowedXDelta = 20,

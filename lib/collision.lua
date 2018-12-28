@@ -26,7 +26,6 @@ function processCollision(ctX, ctY, tileX, tileY, thePlayer, worldMap)
     if ctX > tileX and ctY > tileY then
         lowerRight(ctX, ctY, tileX, tileY, thePlayer, worldMap)           
     end
-
 end
 
 function upperLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
@@ -81,6 +80,10 @@ function middleLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
 end
 
 function middle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
+    -- For air blocks
+    if worldMap.fullMap[ctX][ctY] == 0 then
+        thePlayer.onLadder = false
+    end
     -- For solid blocks
     if worldMap.fullMap[ctX][ctY] == 1 then
         if thePlayer.ySpeed > 0 then
@@ -99,6 +102,26 @@ function middle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
             thePlayer.xSpeed = 0
             nextX = w + thePlayer.width / 2
         end
+    end
+    -- For ladders
+    if worldMap.fullMap[ctX][ctY] == 3 then
+        if worldMap.fullMap[tileX][tileY - 1] == 0 and thePlayer.climbingUp then
+            thePlayer.ySpeed = thePlayer.jumpHeight / 1.5
+        elseif thePlayer.graspingUp then
+            thePlayer.climbingUp = true
+            thePlayer.lastClimbTime = love.timer.getTime()
+        elseif thePlayer.graspingDown then
+            thePlayer.climbingDown = true
+            thePlayer.lastClimbTime = love.timer.getTime()
+        else
+            thePlayer.lastClimbTime = love.timer.getTime()
+            thePlayer.climbingUp = false
+            thePlayer.climbingDown = false
+        end
+    --else
+        --thePlayer.onLadder = false
+        --thePlayer.climbingUp = false
+        --thePlayer.climbingDown = false
     end
 end
 
@@ -125,12 +148,13 @@ function lowerLeft(ctX, ctY, tileX, tileY, thePlayer, worldMap)
         end
     end
     -- For bridge blocks (2) (Code duplication for now)
-    if worldMap.fullMap[ctX][ctY] == 2 then
+    if worldMap.fullMap[ctX][ctY] == 2 and not thePlayer.dropDown then
         if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
             if px < w then
                 thePlayer.lastGrounded = love.timer.getTime()
                 thePlayer.ySpeed = 0
                 nextY = y - thePlayer.height / 2
+                thePlayer.dropDown = false
             end
         end
     end    
@@ -143,13 +167,42 @@ function lowerMiddle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
         nextY = y - thePlayer.height / 2
         -- Also set the lastGrounded
         thePlayer.lastGrounded = love.timer.getTime()
+        thePlayer.dropDown = false
     end
     -- For bridge blocks (2) (Code duplication for now)
-    if worldMap.fullMap[ctX][ctY] == 2 then
+    if worldMap.fullMap[ctX][ctY] == 2 and not thePlayer.dropDown then
         if thePlayer.ySpeed > 0 then
             thePlayer.ySpeed = 0
             nextY = y - thePlayer.height / 2
             thePlayer.lastGrounded = love.timer.getTime()
+        end
+    end
+    -- On a ladder
+    if worldMap.fullMap[ctX][ctY] == 3 and worldMap.fullMap[tileX][tileY] ~= 3 then
+        thePlayer.lastGrounded = love.timer.getTime()
+        -- If we're not trying to climb down, remain here.
+        -- This will also cause some snapping in position. Will be covered by animation
+        if thePlayer.graspingUp then --and love.timer.getTime() - thePlayer.lastClimbTime < thePlayer.allowAirClimbFor then
+            --print("here "..(love.timer.getTime() - thePlayer.lastClimbTime))
+            --if(thePlayer.ySpeed < -1) then
+                --thePlayer.ySpeed = thePlayer.jumpHeight / 2
+            -- thePlayer.climbingUp = false
+            --thePlayer.climbingUp = false
+            --thePlayer.graspingUp = 0
+            if thePlayer.ySpeed > 0 then
+                thePlayer.ySpeed = 0
+            end
+        elseif thePlayer.graspingDown then
+            --print("here2")
+            thePlayer.climbingDown = true
+            thePlayer.lastClimbTime = love.timer.getTime()
+        else
+            --print("here3")
+            thePlayer.ySpeed = 0
+            --nextY = y - thePlayer.height / 2
+            thePlayer.lastClimbTime = love.timer.getTime()
+            thePlayer.climbingUp = false
+            thePlayer.climbingDown = false
         end
     end
 end
@@ -168,11 +221,12 @@ function lowerRight(ctX, ctY, tileX, tileY, thePlayer, worldMap)
                 thePlayer.lastGrounded = love.timer.getTime()
                 thePlayer.ySpeed = 0
                 nextY = y - thePlayer.height / 2
+                thePlayer.dropDown = false
             end
         end
     end
     -- For bridge blocks (2) (Code duplication for now)
-    if worldMap.fullMap[ctX][ctY] == 2 then
+    if worldMap.fullMap[ctX][ctY] == 2 and not thePlayer.dropDown then
         if worldMap.fullMap[tileX][tileY + 1] == 0 and worldMap.fullMap[tileX - 1][tileY] == 0 and thePlayer.ySpeed > 0 then
             if px < w then
                 thePlayer.lastGrounded = love.timer.getTime()

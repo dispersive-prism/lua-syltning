@@ -68,31 +68,37 @@ function love.load()
     end
         
     worldMap.fullMap[10][2] = 1
-    worldMap.fullMap[10][3] = 1
     worldMap.fullMap[10][9] = 1
     worldMap.fullMap[10][8] = 1
     worldMap.fullMap[10][7] = 1
     worldMap.fullMap[10][6] = 1
-    worldMap.fullMap[10][2] = 1
     worldMap.fullMap[1][2] = 1
     worldMap.fullMap[1][3] = 1
     worldMap.fullMap[6][9] = 1
     worldMap.fullMap[6][8] = 1
     worldMap.fullMap[6][6] = 1
     worldMap.fullMap[6][4] = 2
-    worldMap.fullMap[4][9] = 1    
+    worldMap.fullMap[7][4] = 2
+    worldMap.fullMap[8][4] = 2
+    worldMap.fullMap[9][4] = 2
+    worldMap.fullMap[4][9] = 1
     worldMap.fullMap[2][8] = 1
     worldMap.fullMap[2][7] = 1
     worldMap.fullMap[3][5] = 1
     worldMap.fullMap[4][5] = 1
     worldMap.fullMap[5][5] = 1
     worldMap.fullMap[1][8] = 1
+    worldMap.fullMap[11][9] = 3
+    worldMap.fullMap[11][8] = 3
+    worldMap.fullMap[11][7] = 3
+    worldMap.fullMap[11][6] = 3
+    
     
     worldMap.updatePaddedMap()
     
 end
  
-function love.update(dt)
+function love.update(dt)   
     if love.keyboard.isDown('left') then
        background:shiftX(1) 
     end
@@ -113,12 +119,32 @@ function love.update(dt)
     if love.keyboard.isDown('a') then
         moveRight(thePlayer, dt)
     end
-    if love.keyboard.isDown('w') then
-        moveUp(thePlayer, dt)
+    if love.keyboard.isDown('space') then
+        if(thePlayer.crouching) then
+            thePlayer.dropDown = true
+        else
+            jumpAction(thePlayer, dt)
+        end
     end
+    if love.keyboard.isDown('w') then
+        upAction(thePlayer, dt)
+    end
+    if love.keyboard.isDown('s') then
+        downAction(thePlayer, dt)    
+    end
+    
     if not love.keyboard.isDown('w') then
-       thePlayer.lastJumpTime = love.timer.getTime()
+        thePlayer.graspingUp = false
+        thePlayer.climbingUp = false
+    end
+    if not love.keyboard.isDown('space') then
+        thePlayer.crouching = false
+        thePlayer.lastJumpTime = love.timer.getTime()
        -- Nothing
+    end
+    if not love.keyboard.isDown('s') then
+        thePlayer.graspingDown = false
+        thePlayer.climbingDown = false
     end
     if not love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
         -- Apply drag to the player
@@ -130,11 +156,27 @@ function love.update(dt)
     
     updatePadding(thePlayer, worldMap, backgrounds, theWorld, dt)
     
-    -- Apply gravity to the player
-    thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity
+    -- Apply gravity to the player (unless he/she is climbing)
+    if love.timer.getTime() - thePlayer.lastClimbTime > thePlayer.allowAirClimbFor then
+        thePlayer.ySpeed = thePlayer.ySpeed - theWorld.gravity * dt
 
-    if thePlayer.ySpeed > thePlayer.maxFallSpeed then
-        thePlayer.ySpeed = thePlayer.maxFallSpeed
+        -- Cap the fall speed
+        if thePlayer.ySpeed > thePlayer.maxFallSpeed then
+            thePlayer.ySpeed = thePlayer.maxFallSpeed
+        end
+    elseif thePlayer.climbingUp then
+        thePlayer.ySpeed = thePlayer.ySpeed - thePlayer.climbAcceleration * dt
+        if thePlayer.ySpeed < -thePlayer.maxClimbSpeed then
+            thePlayer.ySpeed = -thePlayer.maxClimbSpeed
+        end
+    elseif thePlayer.climbingDown then
+        thePlayer.ySpeed = thePlayer.ySpeed + thePlayer.climbAcceleration * dt
+        if thePlayer.ySpeed > thePlayer.maxClimbSpeed then
+            thePlayer.ySpeed = thePlayer.maxClimbSpeed    
+        end
+    else
+        -- Apply some drag to the player
+        applyClimbDrag(thePlayer, dt)
     end
     
     nextX = thePlayer.xPosition + thePlayer.xSpeed * dt
@@ -147,7 +189,7 @@ function love.update(dt)
     px = nextX - thePlayer.width / 2
     py = nextY - thePlayer.height / 2
     pw = px + thePlayer.width
-    ph = py + thePlayer.height    
+    ph = py + thePlayer.height
     
     -- Check all the tiles surrounding the player
     for ctX = tileX - 1, tileX + 1 do
@@ -202,6 +244,10 @@ function love.draw()
                     (j - 1) * worldMap.tileSize + worldMap.pixelPaddingY, worldMap.tileSize, worldMap.tileSize)
             elseif worldMap.paddedMap[i][j] == 2 then
                 love.graphics.setColor(1, 0, 0)
+                love.graphics.rectangle("fill", (i - 1) * worldMap.tileSize + worldMap.pixelPaddingX,
+                    (j - 1) * worldMap.tileSize + worldMap.pixelPaddingY, worldMap.tileSize, worldMap.tileSize)
+            elseif worldMap.paddedMap[i][j] == 3 then
+                love.graphics.setColor(1, 0, 1, 0.5)
                 love.graphics.rectangle("fill", (i - 1) * worldMap.tileSize + worldMap.pixelPaddingX,
                     (j - 1) * worldMap.tileSize + worldMap.pixelPaddingY, worldMap.tileSize, worldMap.tileSize)                
             end
@@ -289,7 +335,7 @@ function moveRight(thePlayer, dt)
     end    
 end
 
-function moveUp(thePlayer, dt)
+function jumpAction(thePlayer, dt)
     if thePlayer.lastJumpTime == 0 then
             thePlayer.lastJumpTime = love.timer.getTime()
     end
@@ -299,6 +345,15 @@ function moveUp(thePlayer, dt)
         thePlayer.lastJumpTime = love.timer.getTime()
         thePlayer.lastGrounded = 0
     end    
+end
+
+function upAction(thePlayer, dt)
+    thePlayer.graspingUp = true
+end
+
+function downAction(thePlayer, dt)
+    thePlayer.crouching = true
+    thePlayer.graspingDown = true
 end
 
 function applyDrag(thePlayer, dt)
@@ -311,6 +366,20 @@ function applyDrag(thePlayer, dt)
         thePlayer.xSpeed = thePlayer.xSpeed + theWorld.drag * dt
         if thePlayer.xSpeed > 0 then
             thePlayer.xSpeed = 0
+        end
+    end    
+end
+
+function applyClimbDrag(thePlayer, dt)
+    if thePlayer.ySpeed > 0 then
+        thePlayer.ySpeed = thePlayer.ySpeed - theWorld.climbDrag * 0.5 * dt
+        if thePlayer.ySpeed < 0 then
+            thePlayer.ySpeed = 0
+        end
+    elseif thePlayer.ySpeed < 0 then
+        thePlayer.ySpeed = thePlayer.ySpeed + theWorld.climbDrag * dt
+        if thePlayer.ySpeed > 0 then
+            thePlayer.ySpeed = 0
         end
     end    
 end
