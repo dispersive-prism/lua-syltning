@@ -191,6 +191,7 @@ function lowerMiddle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
             --thePlayer.graspingUp = 0
             if thePlayer.ySpeed > 0 then
                 thePlayer.ySpeed = 0
+                nextY = y - thePlayer.height / 2
             end
         elseif thePlayer.graspingDown then
             --print("here2")
@@ -199,7 +200,7 @@ function lowerMiddle(ctX, ctY, tileX, tileY, thePlayer, worldMap)
         else
             --print("here3")
             thePlayer.ySpeed = 0
-            --nextY = y - thePlayer.height / 2
+            nextY = y - thePlayer.height / 2
             thePlayer.lastClimbTime = love.timer.getTime()
             thePlayer.climbingUp = false
             thePlayer.climbingDown = false

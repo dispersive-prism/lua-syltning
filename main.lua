@@ -138,13 +138,14 @@ function love.update(dt)
         thePlayer.climbingUp = false
     end
     if not love.keyboard.isDown('space') then
-        thePlayer.crouching = false
+        --thePlayer.crouching = false
         thePlayer.lastJumpTime = love.timer.getTime()
        -- Nothing
     end
     if not love.keyboard.isDown('s') then
         thePlayer.graspingDown = false
         thePlayer.climbingDown = false
+        thePlayer.crouching = false
     end
     if not love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
         -- Apply drag to the player
