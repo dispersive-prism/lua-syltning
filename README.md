@@ -6,13 +6,7 @@ I am aware that there is dead code/code duplication in places and that a lot of 
 ## Current status
 * Basic collision detection in place. This still needs some additional work.
 * Parrallax scrolling with tile based backgrounds in place.
-* Basic level in place
-
-..* Now contains a bridge
-
-..** Now contains a pool of water
-
-..* Now contains a ladder
+* Basic level in place (now with a bridge, a pool of water and a ladder)
 
 ## Controls
 Use 'w', 'a', 's', 'd' for movement and 'space' to jump. Pressing 's' on bridges and then jumping makes you drop down. Keep hammering the 'space' button in water to swim.
