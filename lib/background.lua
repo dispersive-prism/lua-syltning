@@ -1,3 +1,5 @@
+-- TODO: Should cope with sprite tiles
+
 Background = {}
 
 function Background:new(o)

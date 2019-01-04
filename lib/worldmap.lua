@@ -1,3 +1,5 @@
+-- TODO: Should also cover sprite textures in fullMapSprite and paddedMapSprite
+
 WorldMap = {
     fullMap = {{}},
     paddedMap = {{}},
